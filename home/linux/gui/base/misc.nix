@@ -20,10 +20,6 @@
     # TODO: Try harden this later
     feishu
 
-    libreoffice-qt6-fresh
-    hunspell
-    hunspellDicts.en_US
-
     # qqmusic
     bwraps.wechat
     # discord # update too frequently, use the web version instead

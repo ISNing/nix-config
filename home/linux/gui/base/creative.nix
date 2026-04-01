@@ -21,6 +21,13 @@
 
       # this app consumes a lot of storage, so do not install it currently
       # kicad     # 3d printing, electrical engineering
+
+      # office
+      libreoffice-qt-still
+      hunspell # spell check for libreoffice
+      hunspellDicts.en_US # USA English
+      hyphenDicts.en_GB # British English
+
     ]
     ++ (lib.optionals pkgs.stdenv.isx86_64 [
       # https://github.com/edolstra/nix-warez/blob/master/blender/flake.nix
