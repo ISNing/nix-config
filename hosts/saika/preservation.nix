@@ -166,9 +166,6 @@ in
         ".local/share/nvim"
         ".local/state/nvim"
 
-        # helix & steel
-        ".local/share/steel"
-
         # Joplin
         ".config/joplin" # tui client
         ".config/Joplin" # joplin-desktop
