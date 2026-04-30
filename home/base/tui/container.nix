@@ -20,7 +20,7 @@
     kubectl-node-shell # exec into node
     kubepug # kubernetes pre upgrade checker
     kubectl-cnpg # cloudnative-pg's cli tool
-    kubectl-oidc-login # kubectl plugin for OIDC authentication
+    kubelogin-oidc # kubectl plugin for OIDC authentication
 
     kubebuilder
     istioctl
