@@ -21,13 +21,13 @@
     tokei # count lines of code, alternative to cloc
 
     # db related
-    mycli
-    pgcli
-    mongosh
-    sqlite
+    # mycli
+    # pgcli
+    # mongosh
+    # sqlite
 
     # embedded development
-    minicom
+    # minicom
 
     # ai related
     python313Packages.huggingface-hub # huggingface-cli
