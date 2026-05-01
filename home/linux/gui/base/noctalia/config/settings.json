@@ -247,7 +247,7 @@
     "manualSunset": "18:30",
     "monitorForColors": "",
     "predefinedScheme": "Noctalia (default)",
-    "schedulingMode": "off",
+    "schedulingMode": "location",
     "syncGsettings": true,
     "useWallpaperColors": true
   },
@@ -635,7 +635,32 @@
     "warningColor": ""
   },
   "templates": {
-    "activeTemplates": [],
+    "activeTemplates": [
+      {
+        "enabled": true,
+        "id": "qt"
+      },
+      {
+        "enabled": true,
+        "id": "niri"
+      },
+      {
+        "enabled": true,
+        "id": "gtk"
+      },
+      {
+        "enabled": true,
+        "id": "steam"
+      },
+      {
+        "enabled": true,
+        "id": "telegram"
+      },
+      {
+        "enabled": true,
+        "id": "kcolorscheme"
+      }
+    ],
     "enableUserTheming": false
   },
   "ui": {
@@ -654,7 +679,7 @@
   },
   "wallpaper": {
     "automationEnabled": true,
-    "directory": "/home/ryan/Pictures/Wallpapers",
+    "directory": "/home/isning/Pictures/Wallpapers",
     "enableMultiMonitorDirectories": false,
     "enabled": true,
     "favorites": [],
@@ -664,12 +689,12 @@
     "linkLightAndDarkWallpapers": true,
     "monitorDirectories": [
       {
-        "directory": "/home/ryan/Pictures/Wallpapers",
+        "directory": "/home/isning/Pictures/Wallpapers",
         "name": "eDP-1",
         "wallpaper": ""
       },
       {
-        "directory": "/home/ryan/Pictures/Wallpapers",
+        "directory": "/home/isning/Pictures/Wallpapers",
         "name": "HDMI-A-1",
         "wallpaper": ""
       }
