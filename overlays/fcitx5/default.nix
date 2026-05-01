@@ -6,7 +6,8 @@ _:
     name = "rime-data";
     paths = [
       ./my-rime-data
-      self.rime-ice
+      self.rime-wanxiang
+      self.nur.repos.jetcookies.rime-lmdg
     ];
   };
 
@@ -17,6 +18,6 @@ _:
   };
 
   # used by macOS Squirrel
-  # FIXME: Need to add rime-ice as dependency
+  # FIXME: Need to add rime-wanxiang as dependency
   flypy-squirrel = ./my-rime-data;
 })

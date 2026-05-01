@@ -1,8 +1,8 @@
 patch:
-  __include: rime_ice_suggestion:/
+  __include: wanxiang_suggested_default:/
 
-  schema_list:
-    - schema: rime_ice
+  # schema_list:
+  #   - schema: rime_ice
 
   #
   # 可用的按键有 Caps_Lock, Shift_L, Shift_R, Control_L, control_R

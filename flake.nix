@@ -186,6 +186,11 @@
       flake = false;
     };
 
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nur-ryan4yin = {
       url = "github:ryan4yin/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";
