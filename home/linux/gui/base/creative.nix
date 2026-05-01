@@ -23,7 +23,7 @@
       # kicad     # 3d printing, electrical engineering
 
       # office
-      libreoffice-qt-still
+      libreoffice-qt6-fresh
       hunspell # spell check for libreoffice
       hunspellDicts.en_US # USA English
       hyphenDicts.en_GB # British English
