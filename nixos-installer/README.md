@@ -102,7 +102,9 @@ After the first boot:
 
 4. **Secure Boot**: follow
    [lanzaboote Quick Start](https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md)
-   and [hosts/idols-ai/secureboot.nix](../hosts/idols-ai/secureboot.nix).
+   and [hosts/idols-ai/secureboot.nix](../hosts/idols-ai/secureboot.nix). also
+   [enable measured boot](https://nix-community.github.io/lanzaboote/how-to-guides/enable-measured-boot.html)
+   if desired.
 
 ## Changing LUKS2 passphrase
 

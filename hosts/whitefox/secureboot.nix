@@ -31,5 +31,18 @@
   boot.lanzaboote = {
     enable = true;
     pkiBundle = "/var/lib/sbctl";
+
+    # If Measured Boot is enabled, you cannot store more than 8 generations on the ESP.
+    # This is a strict limit required and enforced by systemd-pcrlock.
+    configurationLimit = 8;
+
+    measuredBoot = {
+      enable = true;
+      pcrs = [
+        0
+        4
+        7
+      ];
+    };
   };
 }

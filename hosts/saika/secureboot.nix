@@ -32,11 +32,24 @@
     enable = true;
     pkiBundle = "/var/lib/sbctl";
 
+    # If Measured Boot is enabled, you cannot store more than 8 generations on the ESP.
+    # This is a strict limit required and enforced by systemd-pcrlock.
+    configurationLimit = 8;
+
     # TODO: Seems currently there's no easy way adding
     # extra entries(in case windows here) for lanzaboote
     # See: https://github.com/nix-community/lanzaboote/issues/427
     settings = {
       reboot-for-bitlocker = true;
+    };
+
+    measuredBoot = {
+      enable = true;
+      pcrs = [
+        0
+        4
+        7
+      ];
     };
   };
 }
