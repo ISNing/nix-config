@@ -229,5 +229,5 @@ animations {
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Window-Rules
 
-include "./noctalia.kdl"
+include "./noctalia.kdl" optional=true
 
