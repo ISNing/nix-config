@@ -7,15 +7,15 @@
 }:
 
 let
-  luaScriptName = "df-${name}-logic.lua";
-  componentName = "custom.df-${name}-logic";
-  sourceName = "deepfilter_${name}";
+  luaScriptName = "noise_suppression-${name}-logic.lua";
+  componentName = "custom.noise_suppression-${name}-logic";
+  sourceName = "noise_suppression_${name}";
   descriptionVal = if description == null then "nil" else ''"${description}"'';
 in
 pkgs.symlinkJoin {
-  name = "deepfilter-pack-${name}";
+  name = "noise-suppression-pack-${name}";
   paths = [
-    (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/10-df-${name}.conf" ''
+    (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/10-noise-suppression-${name}.conf" ''
       wireplumber.components = [
         {
           name = ${luaScriptName}
@@ -43,7 +43,7 @@ pkgs.symlinkJoin {
         local raw_desc = node.properties["node.description"] or "Unknown Microphone"
         local final_desc = OVERRIDE_DESC or (raw_desc .. " (Cleaned)")
 
-        log.info("Mic target [${nodeTarget}] detected. Loading DeepFilter as: " .. final_desc)
+        Log.info("Mic target [${nodeTarget}] detected. Loading DeepFilter as: " .. final_desc)
         
         -- audio.rate is fixed at 48000Hz as required by the DeepFilterNet model
         local args = [[
@@ -81,7 +81,7 @@ pkgs.symlinkJoin {
 
       target_om:connect("object-removed", function(om, node)
         if filter_module then
-          log.info("Mic [${nodeTarget}] disconnected. Unloading DeepFilter...")
+          Log.info("Mic [${nodeTarget}] disconnected. Unloading DeepFilter...")
           filter_module:destroy()
           filter_module = nil
         end
