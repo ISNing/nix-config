@@ -31,8 +31,7 @@
       #"https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
 
       "https://nix-community.cachix.org"
-      # my own cache server, currently not used.
-      # "https://ryan4yin.cachix.org"
+      # my own cache server
       "https://isning.cachix.org"
       "https://jetcookies.cachix.org"
     ];
@@ -40,7 +39,6 @@
     trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "isning.cachix.org-1:WTBOxWUkAhuZGq7FtTRwK8jrpsLh23nCjeIgBb1aNDE="
-      "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
       "jetcookies.cachix.org-1:YM4ERAadhoioRkDA5ZKgnKN98N5x0ubV8t6HeIekcnc="
     ];
     builders-use-substitutes = true;

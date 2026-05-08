@@ -12,7 +12,7 @@
       # gimp      # image editing, I prefer using figma in browser instead of this one
       inkscape # vector graphics
       krita # digital painting
-      musescore # music notation
+      # musescore # music notation
       # reaper # audio production
       # sonic-pi # music programming
 

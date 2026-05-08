@@ -79,7 +79,7 @@
               requests
               pyquery
               pyyaml
-              boto3
+              # boto3 # AWS SDK for Python
 
               # misc
               protobuf # protocol buffer compiler
@@ -150,7 +150,7 @@
         proselint # English prose linter
 
         #-- verilog / systemverilog
-        verible
+        # verible
 
         #-- Optional Requirements:
         prettier # common code formatter

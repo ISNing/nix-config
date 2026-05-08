@@ -76,9 +76,9 @@ in
     # https://github.com/an-anime-team/
     networking.mihoyo-telemetry.block = true;
     environment.systemPackages = with aagl.packages."x86_64-linux"; [
-      anime-game-launcher # Genshin: Impact
-      honkers-railway-launcher # Honkai: Star Rail
-      sleepy-launcher # Zenless Zon Zero
+      # anime-game-launcher # Genshin: Impact
+      # honkers-railway-launcher # Honkai: Star Rail
+      # sleepy-launcher # Zenless Zon Zero
     ];
   };
 }

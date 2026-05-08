@@ -57,7 +57,6 @@ nvme0n1           259:0    0  1.8T  0 disk
                                             /var/lib/private
                                             /var/lib/nixos
                                             /var/lib/lxd
-                                            /var/lib/netbird-homelab
                                             /var/lib/lxc
                                             /var/lib/libvirt
                                             /var/lib/iwd
@@ -160,7 +159,6 @@ nvme0n1           259:0    0  1.8T  0 disk
                                             /etc/nix/inputs
                                             /etc/NetworkManager/system-connections
                                             /etc/agenix
-                                            /etc/netbird-homelab
                                             /nix/store
                                             /etc/machine-id
                                             /persistent

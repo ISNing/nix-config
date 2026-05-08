@@ -46,10 +46,10 @@
     };
 
     # Usage: https://wiki.nixos.org/wiki/Waydroid
-    waydroid = {
-      enable = true;
-      package = pkgs.waydroid-nftables;
-    };
+    # waydroid = {
+    #   enable = true;
+    #   package = pkgs.waydroid-nftables;
+    # };
 
     # libvirtd = {
     #   enable = true;
@@ -68,7 +68,7 @@
     # https://github.com/casualsnek/waydroid_script
     # https://github.com/AtaraxiaSjel/nur/tree/master/pkgs/waydroid-script
     # https://wiki.archlinux.org/title/Waydroid#ARM_Apps_Incompatible
-    nur-ataraxiasjel.packages.${pkgs.stdenv.hostPlatform.system}.waydroid-script
+    # nur-ataraxiasjel.packages.${pkgs.stdenv.hostPlatform.system}.waydroid-script
 
     # Need to add [File (in the menu bar) -> Add connection] when start for the first time
     # virt-manager
