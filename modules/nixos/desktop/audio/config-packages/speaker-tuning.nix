@@ -3,163 +3,147 @@
   name,
   nodeTarget,
   description,
-  baseOffset,
-  referenceLevel,
+
+  splAtZeroDbVolume,
+  standard ? "ISO226-2023",
+  mode ? "FFT",
+  fftSize ? 4096,
+  iirQuality ? "Normal",
+  hardClip ? false,
+  hardClipRange ? 6.0,
+  loopbackNodeName ? null,
+  tunedNodeName ? null,
+  loopbackPriority ? null,
+  tunedPriority ? null,
+  hidePhysicalNode ? true,
+  enforcePhysicalVolume ? true,
 }:
 
 let
+  mkPackage = import ./template.nix;
+  common = import ./common.nix;
+  stdMap = {
+    "Flat" = 0;
+    "ISO226-2003" = 1;
+    "Fletcher-Munson" = 2;
+    "Robinson-Dadson" = 3;
+    "ISO226-2023" = 4;
+  };
+  modeMap = {
+    "FFT" = 0;
+    "IIR" = 1;
+  };
+  fftMap = {
+    "256" = 0;
+    "512" = 1;
+    "1024" = 2;
+    "2048" = 3;
+    "4096" = 4;
+    "8192" = 5;
+    "16384" = 6;
+  };
+  approxMap = {
+    "Fastest" = 0;
+    "Low" = 1;
+    "Normal" = 2;
+    "High" = 3;
+    "Best" = 4;
+  };
+
   eqNodeName = "${name}_loudness_eq";
-  captureNodeName = "${name}_input";
+  # Precomputed linear gain values for integer dB offsets to avoid runtime math pitfalls.
+  outputGainLinearTable = {
+    "-12" = 0.2511886432;
+    "-11" = 0.2818382931;
+    "-10" = 0.3162277660;
+    "-9" = 0.3548133892;
+    "-8" = 0.3981071706;
+    "-7" = 0.4466835922;
+    "-6" = 0.5011872336;
+    "-5" = 0.5623413252;
+    "-4" = 0.6309573445;
+    "-3" = 0.7079457844;
+    "-2" = 0.7943282347;
+    "-1" = 0.8912509381;
+    "0" = 1.0;
+    "1" = 1.1220184543;
+    "2" = 1.2589254118;
+    "3" = 1.4125375446;
+    "4" = 1.5848931925;
+    "5" = 1.7782794100;
+    "6" = 1.9952623150;
+    "7" = 2.2387211386;
+    "8" = 2.5118864315;
+    "9" = 2.8183829313;
+    "10" = 3.1622776602;
+    "11" = 3.5481338923;
+    "12" = 3.9810717055;
+  };
+  outputGainDb = 83 - splAtZeroDbVolume;
+  outputGainDbInt = builtins.toString (builtins.floor (outputGainDb + 0.5));
+  outputGainLinear = outputGainLinearTable.${outputGainDbInt} or 1.0;
+  eqCaptureNodeName = common.mkVirtualNodeName nodeTarget "tuned" tunedNodeName;
+  directCaptureNodeName = common.mkVirtualNodeName nodeTarget "loopback" loopbackNodeName;
+  tunedPriorityFieldLua =
+    if tunedPriority == null then "" else '',"priority.session": ${toString tunedPriority}'';
+  loopbackPriorityFieldLua =
+    if loopbackPriority == null then "" else '',"priority.session": ${toString loopbackPriority}'';
+  hidePhysicalNodeField = common.mkHidePhysicalNodeField "Audio/Sink/Internal" hidePhysicalNode;
+  enforcePhysicalVolumeField = common.mkEnforcePhysicalVolumeField "sink" enforcePhysicalVolume;
   luaScriptName = "${name}-logic.lua";
   componentName = "custom.${name}-logic";
   # Convert Nix null to Lua nil for the script logic
   descriptionVal = if description == null then "nil" else ''"${description}"'';
 in
-pkgs.symlinkJoin {
-  name = "sink-processing-pack-${name}";
-  paths = [
-    # WirePlumber component registration (SPA-JSON format for WP 0.5+)
-    (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/10-${name}-registration.conf" ''
-      wireplumber.components = [
-        {
-          name = "${luaScriptName}"
-          type = "script/lua"
-          provides = "${componentName}"
-        }
-      ]
+mkPackage {
+  inherit pkgs luaScriptName;
+  packageName = "sink-processing-pack-${name}";
+  registrationFileName = "10-${name}-registration.conf";
+  registrationText = common.mkRegistrationText {
+    inherit luaScriptName componentName;
+    extraConfig = ''
 
-      wireplumber.profiles = {
-        main = {
-          "${componentName}" = "required"
-        }
-      }
-    '')
-
-    # Dynamic Lua Logic
-    (pkgs.writeTextDir "share/wireplumber/scripts/${luaScriptName}" ''
-      -- Native logic for Sink [${name}]
-      -- Handles dynamic rate negotiation and hardware hot-plugging
-      Log.info("Sink post-processing logic for [${name}] initialized")
-
-      local BASE_OFFSET = ${toString baseOffset}
-      local OVERRIDE_DESC = ${descriptionVal}
-      local target_metadata = nil
-      local filter_module = nil
-
-      -- 1. ObjectManager to monitor the target (nodeTarget)
-      local target_om = ObjectManager {
-        Interest {
-          type = "node",
-          Constraint { "node.name", "=", "${nodeTarget}" }
-        }
-      }
-
-      -- 2. ObjectManager to find the global 'settings' metadata table
-      local metadata_om = ObjectManager {
-        Interest {
-          type = "metadata",
-          Constraint { "metadata.name", "=", "settings" }
-        }
-      }
-
-      metadata_om:connect("object-added", function(om, metadata)
-        target_metadata = metadata
-      end)
-
-      -- 3. Load Filter Chain when target is detected
-      target_om:connect("object-added", function(om, node)
-        -- Determine display name: Use override or fetch from physical node properties
-        local raw_desc = node.properties["node.description"] or "Unknown Speaker"
-        local final_desc = OVERRIDE_DESC or (raw_desc .. " w/ Tuning")
-
-        Log.info("Target detected: " .. raw_desc .. ". Loading adaptive-rate filter: " .. final_desc)
-        
-        -- audio.rate is omitted to allow PipeWire to negotiate rates automatically
-        local args = [[
-          {
-            "node.description": "]] .. final_desc .. [[",
-            "media.name": "]] .. final_desc .. [[",
-            "filter.graph": {
-              "nodes": [
-                {
-                  "type": "lv2",
-                  "name": "${eqNodeName}",
-                  "plugin": "http://lsp-plug.in/plugins/lv2/loud_comp_stereo",
-                  "label": "loud_comp_stereo",
-                  "control": {
-                    "Volume": ]] .. tostring(BASE_OFFSET) .. [[,
-                    "Contour": 1,
-                    "Reference Level": ${toString referenceLevel}
+            monitor.alsa.rules = [
+              {
+                matches = [
+                  {
+                    node.name = "${nodeTarget}"
+                  }
+                ]
+                actions = {
+                  update-props = {
+      ${hidePhysicalNodeField}
+                    priority.session = 1
+      ${enforcePhysicalVolumeField}
                   }
                 }
-              ]
-            },
-            "capture.props": {
-              "node.name": "${captureNodeName}",
-              "media.class": "Audio/Sink",
-              "audio.channels": 2,
-              "audio.position": [ "FL", "FR" ]
-            },
-            "playback.props": {
-              "node.target": "${nodeTarget}",
-              "node.passive": true,
-              "audio.channels": 2,
-              "audio.position": [ "FL", "FR" ],
-              "priority.session": 3000
-            }
-          }
-        ]]
-        filter_module = LocalModule("libpipewire-module-filter-chain", args, {})
-      end)
+              }
+            ]
+    '';
+  };
+  scriptBody = ''
+    local CFG = {
+      name = ${builtins.toJSON name},
+      log_prefix = ${builtins.toJSON "[audio:${name}:speaker] "},
+      override_desc = ${descriptionVal},
+      output_gain_db = ${toString outputGainDb},
+      output_gain_linear = ${toString outputGainLinear},
+      eq_node_name = ${builtins.toJSON eqNodeName},
+      eq_capture_node_name = ${builtins.toJSON eqCaptureNodeName},
+      direct_capture_node_name = ${builtins.toJSON directCaptureNodeName},
+      node_target = ${builtins.toJSON nodeTarget},
+      std = ${toString stdMap.${standard}},
+      mode = ${toString modeMap.${mode}},
+      fft = ${toString fftMap.${toString fftSize}},
+      approx = ${toString approxMap.${iirQuality}},
+      hclip = ${if hardClip then "1" else "0"},
+      hcrange = ${toString hardClipRange},
+      tuned_priority_field = [=[${tunedPriorityFieldLua}]=],
+      loopback_priority_field = [=[${loopbackPriorityFieldLua}]=],
+      enforce_physical_volume = ${if enforcePhysicalVolume then "true" else "false"},
+    }
 
-      -- Unload Filter Chain when hardware is removed
-      target_om:connect("object-removed", function(om, node)
-        if filter_module then
-          Log.info("Physical target [${nodeTarget}] removed. Unloading filter-chain...")
-          filter_module:destroy()
-          filter_module = nil
-        end
-      end)
-
-      -- 4. Monitor virtual sink for volume updates to sync with metadata (WP 0.5+ Fixed Logic)
-      local virtual_om = ObjectManager {
-        Interest {
-          type = "node",
-          Constraint { "node.name", "=", "${captureNodeName}" }
-        }
-      }
-
-      virtual_om:connect("object-added", function(om, node)
-        Log.info("[${name}] Virtual node initialized, linking volume sync...")
-        
-        node:connect("params-changed", function(n, param_name)
-          if param_name ~= "Props" or target_metadata == nil then return end
-          
-          -- Get the SPA Pod parameter
-          local pod = n:get_param("Props")
-          if not pod then return end
-          
-          -- Parse the Pod into a Lua table
-          local props = pod:parse()
-          if type(props) ~= "table" or not props.channelVolumes then return end
-          
-          local vol_linear = props.channelVolumes[1]
-          local vol_db = -60.0
-          
-          if vol_linear > 0.001 then
-            vol_db = 20 * math.log10(vol_linear)
-          end
-          
-          local target_val = string.format("%.2f", vol_db + BASE_OFFSET)
-          target_metadata:set_value(0, "${eqNodeName}:Volume", target_val)
-        end)
-      end)
-
-      -- Activate all ObjectManagers
-      target_om:activate()
-      metadata_om:activate()
-      virtual_om:activate()
-    '')
-  ];
+  ''
+  + builtins.readFile ./speaker-tuning.lua;
   passthru.requiredLv2Packages = [ pkgs.lsp-plugins ];
 }

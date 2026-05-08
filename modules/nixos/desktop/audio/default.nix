@@ -15,11 +15,20 @@ let
     name: opts:
     pkgs.callPackage ./config-packages/speaker-tuning.nix {
       inherit name;
+      inherit (opts) splAtZeroDbVolume;
       inherit (opts)
         nodeTarget
         description
-        baseOffset
-        referenceLevel
+        standard
+        mode
+        fftSize
+        iirQuality
+        hardClip
+        hardClipRange
+        tunedPriority
+        loopbackPriority
+        hidePhysicalNode
+        enforcePhysicalVolume
         ;
     };
 
@@ -27,7 +36,15 @@ let
     name: opts:
     pkgs.callPackage ./config-packages/noise-suppression.nix {
       inherit name;
-      inherit (opts) nodeTarget description attenuationLimit;
+      inherit (opts)
+        nodeTarget
+        description
+        attenuationLimit
+        tunedPriority
+        loopbackPriority
+        hidePhysicalNode
+        enforcePhysicalVolume
+        ;
     };
 
 in
@@ -51,24 +68,77 @@ in
                   default = null;
                   description = "Display name in sound settings. If null, auto-generated from hardware name.";
                 };
-                baseOffset = mkOption {
+                splAtZeroDbVolume = mkOption {
                   type = types.float;
-                  description = ''
-                    The calibration offset in decibels (dB). 
-                    This value aligns the digital volume scale with the physical Sound Pressure Level (SPL).
-                    It represents the difference between your measured output (e.g., at -14 LUFS) and the 
-                    target listening level. Higher values result in more perceived 'fullness' at lower volumes.
-                  '';
+                  description = "Measured dB SPL at listening position when playing -14 LUFS pink noise with plugin volume at 0.0 dB; used to compute post-EQ output gain (83 - splAtZeroDbVolume).";
                 };
-                referenceLevel = mkOption {
-                  type = types.int;
-                  default = 83;
-                  description = ''
-                    The target reference listening level in dB SPL, typically following ISO 226 standards.
-                    Default is 83 dB. This is the 'pivot point' where the frequency response is 
-                    considered flat. As you lower your system volume below this point, the plugin 
-                    dynamically boosts bass and treble to maintain perceived tonal balance.
-                  '';
+                standard = mkOption {
+                  type = types.enum [
+                    "Flat"
+                    "ISO226-2003"
+                    "Fletcher-Munson"
+                    "Robinson-Dadson"
+                    "ISO226-2023"
+                  ];
+                  default = "ISO226-2023";
+                };
+                mode = mkOption {
+                  type = types.enum [
+                    "FFT"
+                    "IIR"
+                  ];
+                  default = "FFT";
+                };
+                fftSize = mkOption {
+                  type = types.enum [
+                    256
+                    512
+                    1024
+                    2048
+                    4096
+                    8192
+                    16384
+                  ];
+                  default = 4096;
+                };
+                iirQuality = mkOption {
+                  type = types.enum [
+                    "Fastest"
+                    "Low"
+                    "Normal"
+                    "High"
+                    "Best"
+                  ];
+                  default = "Normal";
+                };
+                hardClip = mkOption {
+                  type = types.bool;
+                  default = false;
+                };
+                hardClipRange = mkOption {
+                  type = types.float;
+                  default = 6.0;
+                  description = "Hard-clipping range in dB (0.0 to 24.0). Higher means softer clipping knee.";
+                };
+                tunedPriority = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "Optional priority.session for tuned virtual sink. null uses PipeWire/WirePlumber default.";
+                };
+                loopbackPriority = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "Optional priority.session for loopback virtual sink. null uses PipeWire/WirePlumber default.";
+                };
+                hidePhysicalNode = mkOption {
+                  type = types.bool;
+                  default = true;
+                  description = "Hide physical sink node by setting node.hidden and internal media.class.";
+                };
+                enforcePhysicalVolume = mkOption {
+                  type = types.bool;
+                  default = true;
+                  description = "Force physical sink volume to 100% and keep it there.";
                 };
               };
             }
@@ -100,6 +170,26 @@ in
                   type = types.int;
                   default = 100;
                   description = "The maximum amount of noise attenuation in dB. 100 is the maximum suppression.";
+                };
+                tunedPriority = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "Optional priority.session for tuned virtual source. null uses PipeWire/WirePlumber default.";
+                };
+                loopbackPriority = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "Optional priority.session for loopback virtual source. null uses PipeWire/WirePlumber default.";
+                };
+                hidePhysicalNode = mkOption {
+                  type = types.bool;
+                  default = true;
+                  description = "Hide physical source node by setting node.hidden and internal media.class.";
+                };
+                enforcePhysicalVolume = mkOption {
+                  type = types.bool;
+                  default = true;
+                  description = "Force physical source volume to 100% and keep it there.";
                 };
               };
             }
