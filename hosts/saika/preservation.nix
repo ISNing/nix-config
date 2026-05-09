@@ -164,9 +164,13 @@ in
         ".local/share/nvim"
         ".local/state/nvim"
 
-        # Joplin
-        ".config/joplin" # tui client
-        ".config/Joplin" # joplin-desktop
+        # SiYuan
+        ".config/siyuan"
+        ".config/SiYuan-Electron"
+
+        # Zotero
+        ".zotero"
+        "Zotero" # the data directory of zotero desktop app
 
         ".local/share/jupyter"
         ".ipython"
