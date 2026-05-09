@@ -47,6 +47,33 @@ in
     enableUserSlices = true;
   };
 
+  hardware.audio = {
+    # now working well
+    # speaker-tuning = {
+    #   enable = true;
+    #   instances."internal-spk" = {
+    #     enable = true;
+    #     nodeTarget = "alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Speaker__sink";
+    #     splAtZeroDbVolume = 74.0;
+    #     # standard = "ISO226-2023";
+    #     standard = "Flat";
+
+    #     hardClip = false;
+    #     # hardClipRange = 3.5;
+    #     # description = "Integrated Speaker w/ Tuning";
+    #   };
+    # };
+
+    noise-suppression = {
+      enable = true;
+      instances."internal-dmic" = {
+        enable = true;
+        nodeTarget = "alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__Mic1__source";
+        # description = "DeepFilter Noise Canceling Source (Stereo)";
+      };
+    };
+  };
+
   boot.extraModprobeConfig = ''
     options snd_sof ipc_type=1
   '';
