@@ -78,7 +78,7 @@ in
     options snd_sof ipc_type=1
   '';
 
-  services.memfd-ashmem-shim.enable = true;
+  boot.memfd-ashmem-shim.enable = true;
 
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
   zramSwap.enable = lib.mkForce false;
