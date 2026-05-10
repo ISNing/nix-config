@@ -31,12 +31,6 @@
   gtk = {
     enable = true;
 
-    font = {
-      name = "Noto Sans";
-      package = pkgs.noto-fonts;
-      size = 11;
-    };
-
     gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
   };
 }

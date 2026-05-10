@@ -241,7 +241,7 @@
     ]
   },
   "colorSchemes": {
-    "darkMode": true,
+    "darkMode": false,
     "generationMethod": "tonal-spot",
     "manualSunrise": "06:30",
     "manualSunset": "18:30",
@@ -436,8 +436,8 @@
   },
   "hooks": {
     "colorGeneration": "",
-    "darkModeChange": "",
-    "enabled": false,
+    "darkModeChange": "sh -c '[ \"$1\" = \"true\" ] && s=\"kvantum-dark\" || s=\"kvantum\"; sed -i \"/^\\[Appearance\\]/,/^\\[/ s/^style=.*/style=$s/\" /home/isning/.config/qt6ct/qt6ct.conf'",
+    "enabled": true,
     "performanceModeDisabled": "",
     "performanceModeEnabled": "",
     "screenLock": "",
@@ -651,23 +651,15 @@
       {
         "enabled": true,
         "id": "steam"
-      },
-      {
-        "enabled": true,
-        "id": "telegram"
-      },
-      {
-        "enabled": true,
-        "id": "kcolorscheme"
       }
     ],
     "enableUserTheming": false
   },
   "ui": {
     "boxBorderEnabled": false,
-    "fontDefault": "Maple Mono NF CN",
+    "fontDefault": "LXGW WenKai Screen",
     "fontDefaultScale": 1,
-    "fontFixed": "Maple Mono NF CN",
+    "fontFixed": "LXGW WenKai Screen",
     "fontFixedScale": 1,
     "panelBackgroundOpacity": 0.85,
     "panelsAttachedToBar": true,
