@@ -53,12 +53,6 @@ in
             Restart = "on-failure";
             RestartSec = 1;
             TimeoutStopSec = 10;
-
-            Environment = [
-              "QT_QPA_PLATFORMTHEME=qt6ct"
-              "QT_AUTO_SCREEN_SCALE_FACTOR=1"
-              "QT_ENABLE_HIGHDPI_SCALING=1"
-            ];
           };
         };
 
