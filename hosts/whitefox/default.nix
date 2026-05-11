@@ -26,17 +26,11 @@ let
       entry:
       let
         sourceChains = entry.sourceChains or [ ];
-        includeInfraControllers = builtins.any (
-          chain:
-          builtins.any (
-            source:
-            source.kind == "Kustomization"
-            && source.namespace == "flux-system"
-            && source.name == "infra-controllers"
-          ) chain
+        includeInfra = builtins.any (
+          chain: builtins.any (source: lib.hasPrefix "infra-" source.name) chain
         ) sourceChains;
       in
-      includeInfraControllers;
+      includeInfra;
   };
 
   coreModule = mylib.genKubeVirtHostModule {
