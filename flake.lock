@@ -1270,11 +1270,11 @@
     "k8s-gitops": {
       "flake": false,
       "locked": {
-        "lastModified": 1778420239,
-        "narHash": "sha256-wVPn2HMdDw4dccG7oXm9o33brqkdhgCoTonDnwn5IoE=",
+        "lastModified": 1778483736,
+        "narHash": "sha256-Wvn7JoyuPTvmwl5Y3F+EVYJnq1n60t+PIKOpSP1EblY=",
         "owner": "isning",
         "repo": "k8s-gitops",
-        "rev": "7ecfd8826c0c9f58230f2be8dae801ba1a5745dd",
+        "rev": "3591dcc9e0777ad89a84f4cddb3e430275aa3e09",
         "type": "github"
       },
       "original": {
