@@ -19,6 +19,9 @@ let
     inherit pkgs;
     fluxSource = k8s-gitops;
     fluxPath = "clusters/kubevirt-lab-1";
+    registryMirrors = {
+      "docker.io" = "dockerproxy.net";
+    };
     compressAsZstd = true;
     zstdLevel = 10;
     # Only include images whose source chain contains flux-system/infra-controllers

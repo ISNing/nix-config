@@ -4,6 +4,7 @@
   fluxPath ? ".",
   namespaces ? [ ],
   imageArch ? null,
+  registryMirrors ? { },
   compressAsZstd ? false,
   zstdLevel ? 10,
   # Filtering options (all optional, defaults allow all):
@@ -20,7 +21,6 @@ let
   lockFile = "${toString fluxSource}/${fluxPath}/images.lock.nix";
   lockEntries = if builtins.pathExists lockFile then import lockFile else [ ];
 
-  # Define individual matchers
   entryNamespaces =
     entry:
     let
@@ -37,45 +37,69 @@ let
 
   archMatch = entry: imageArch == null || !entry ? arch || entry.arch == imageArch;
 
-  # Combine base matchers with optional customFilter
   entryMatch =
     entry:
     namespaceMatch entry
     && archMatch entry
     && (if customFilter != null then customFilter entry else true);
 
-  hasPullImageFields =
+  hasArchiveFields =
     entry:
     let
       imageName = entry.imageName or (entry.finalImageName or null);
     in
-    imageName != null && (entry ? imageDigest) && (entry ? hash);
+    imageName != null && (entry ? imageDigest);
 
-  toPullImage =
+  splitImageName =
+    imageName:
+    let
+      parts = lib.splitString "/" imageName;
+      first = if parts == [ ] then "" else builtins.head parts;
+      hasExplicitRegistry = lib.hasInfix "." first || lib.hasInfix ":" first || first == "localhost";
+      registry = if hasExplicitRegistry then first else "docker.io";
+      repoParts = if hasExplicitRegistry then builtins.tail parts else parts;
+      repo = lib.concatStringsSep "/" repoParts;
+    in
+    {
+      inherit registry repo;
+    };
+
+  imageSource =
+    imageName:
+    let
+      parsed = splitImageName imageName;
+      mappedRegistry = registryMirrors.${parsed.registry} or parsed.registry;
+    in
+    "${mappedRegistry}/${parsed.repo}";
+
+  toMultiArchImageArchive =
     entry:
     let
       imageName = entry.imageName or (entry.finalImageName or null);
       finalImageName = entry.finalImageName or imageName;
       finalImageTag = entry.finalImageTag or "latest";
-      os = entry.os or "linux";
-      arch = entry.arch or (if imageArch == null then "amd64" else imageArch);
-    in
-    pkgs.dockerTools.pullImage {
-      inherit
-        imageName
-        finalImageName
-        finalImageTag
-        os
-        arch
-        ;
       imageDigest = entry.imageDigest;
-      hash = entry.hash;
-    };
+      sourceImage = imageSource imageName;
+      safeName = lib.replaceStrings [ "/" ":" "@" ] [ "-" "-" "-" ] finalImageName;
+      safeTag = lib.replaceStrings [ "/" ":" ] [ "-" "-" ] finalImageTag;
+      safeDigest = lib.replaceStrings [ ":" ] [ "-" ] imageDigest;
+    in
+    pkgs.runCommand "${safeName}-${safeTag}-${safeDigest}.tar"
+      {
+        nativeBuildInputs = [
+          pkgs.skopeo
+        ];
+      }
+      ''
+        skopeo copy --insecure-policy --multi-arch all \
+          "docker://${sourceImage}@${imageDigest}" \
+          "oci-archive:$out:${finalImageName}:${finalImageTag}"
+      '';
 
   selectedEntries = builtins.filter entryMatch lockEntries;
-  validEntries = builtins.filter hasPullImageFields selectedEntries;
+  validEntries = builtins.filter hasArchiveFields selectedEntries;
   skippedEntries = builtins.length selectedEntries - builtins.length validEntries;
-  pulledImages = map toPullImage validEntries;
+  archivedImages = map toMultiArchImageArchive validEntries;
 
   toZstdImage =
     image:
@@ -86,11 +110,10 @@ let
       zstd -q -T0 -${toString zstdLevel} --stdout ${image} > "$out"
     '';
 
-  # Keep this visible during evaluation without forcing module wiring.
   _ =
     if skippedEntries > 0 then
-      builtins.trace "genFluxImageFiles skipped ${toString skippedEntries} lock entries missing fields required by dockerTools.pullImage (imageName/finalImageName, imageDigest, hash)." null
+      builtins.trace "genFluxImageFiles skipped ${toString skippedEntries} lock entries missing fields required by multi-arch archive export (imageName/finalImageName, imageDigest)." null
     else
       null;
 in
-if compressAsZstd then map toZstdImage pulledImages else pulledImages
+if compressAsZstd then map toZstdImage archivedImages else archivedImages
