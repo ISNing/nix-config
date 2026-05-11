@@ -147,6 +147,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bluevein = {
+      url = "github:isning/BlueVein";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # -------------- Gaming ---------------------
 
     nix-gaming = {

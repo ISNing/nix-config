@@ -92,6 +92,26 @@
         "type": "github"
       }
     },
+    "bluevein": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778470969,
+        "narHash": "sha256-9/3+cdxH/bZ+grpJVk2s2aaDGCT8i0eJKMZk9G+hJaY=",
+        "owner": "isning",
+        "repo": "BlueVein",
+        "rev": "34cce90380270fda0e5b38141d5457c193fb7b25",
+        "type": "github"
+      },
+      "original": {
+        "owner": "isning",
+        "repo": "BlueVein",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": [
@@ -2163,6 +2183,7 @@
         "aagl": "aagl",
         "agenix": "agenix",
         "blender-bin": "blender-bin",
+        "bluevein": "bluevein",
         "catppuccin": "catppuccin",
         "colmena": "colmena",
         "disko": "disko",
