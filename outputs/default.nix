@@ -193,6 +193,16 @@ in
         name = "dots";
         inherit (self.checks.${system}.pre-commit-check) shellHook;
       };
+
+      ci = pkgs.mkShell {
+        packages = with pkgs; [
+          bashInteractive
+          just
+          nushell
+          colmena.packages.${system}.colmena
+        ];
+        name = "ci";
+      };
     }
   );
 

@@ -68,13 +68,14 @@ jobs:
             in
             lib.concatStringsSep "\n" lines
           ' > ~/.ssh/known_hosts
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       - name: Run Colmena Apply in devShell
         run: |
           TARGET="${{ inputs.target || 'ci-autodeploy' }}"
 
-          nix run nixpkgs#colmena -- apply --on "@$TARGET" --verbose --show-trace
+          nix develop .#ci --command just col "$TARGET"
 
       - name: Cleanup SSH agent
         if: ${{ always() }}
