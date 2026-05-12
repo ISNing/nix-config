@@ -24,8 +24,10 @@
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       # status: https://mirrors.ustc.edu.cn/status/
       "https://mirrors.ustc.edu.cn/nix-channels/store"
-      # status: https://mirror.sjtu.edu.cn/
-      "https://mirror.sjtu.edu.cn/nix-channels/store"
+      # https://mirror.sjtu.edu.cn/ responds HTTP error 500 timeout for 404 paths
+      # https://mirrors.sjtug.sjtu.edu.cn/ can respond 404 immediately, so use it for now
+      # status: https://mirrors.sjtug.sjtu.edu.cn/
+      "https://mirrors.sjtug.sjtu.edu.cn/nix-channels/store"
       # others
       # "https://mirrors.sustech.edu.cn/nix-channels/store"
       #"https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"

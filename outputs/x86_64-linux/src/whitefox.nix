@@ -16,6 +16,7 @@ let
     name
     "homelab"
     "server"
+    "ci-deploy"
   ];
   ssh-user = "root";
 
