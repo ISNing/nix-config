@@ -28,13 +28,15 @@
       # https://mirrors.sjtug.sjtu.edu.cn/ can respond 404 immediately, so use it for now
       # status: https://mirrors.sjtug.sjtu.edu.cn/
       "https://mirrors.sjtug.sjtu.edu.cn/nix-channels/store"
-      # others
-      # "https://mirrors.sustech.edu.cn/nix-channels/store"
-      #"https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+
+      "https://mirror.nju.edu.cn/nix-channels/store"
+      "https://mirrors.cqupt.edu.cn/nix-channels/store"
 
       "https://nix-community.cachix.org"
+
       # my own cache server
       "https://isning.cachix.org"
+
       "https://jetcookies.cachix.org"
     ];
 
