@@ -152,6 +152,10 @@
         #-- verilog / systemverilog
         # verible
 
+        # -- typesetting
+        typst # a modern typesetting system, like LaTeX but easier to use and more powerful
+        tinymist # typst lsp
+
         #-- Optional Requirements:
         prettier # common code formatter
         fzf
