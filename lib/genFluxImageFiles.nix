@@ -1,10 +1,12 @@
 {
   pkgs,
+  k8s-gitops,
   fluxSource,
   fluxPath ? ".",
   namespaces ? [ ],
   imageArch ? null,
   registryMirrors ? { },
+  mirrorRetries ? 3,
   compressAsZstd ? false,
   zstdLevel ? 10,
   # Filtering options (all optional, defaults allow all):
@@ -18,7 +20,13 @@
 }:
 let
   lib = pkgs.lib;
-  lockFile = "${toString fluxSource}/${fluxPath}/images.lock.nix";
+  fluxSourcePath =
+    if builtins.isAttrs fluxSource && fluxSource ? outPath then
+      fluxSource.outPath
+    else
+      toString fluxSource;
+  mkMultiArchImageArchive = k8s-gitops.lib.mkMultiArchImageArchive;
+  lockFile = "${fluxSourcePath}/${fluxPath}/images.lock.nix";
   lockEntries = if builtins.pathExists lockFile then import lockFile else [ ];
 
   entryNamespaces =
@@ -48,7 +56,7 @@ let
     let
       imageName = entry.imageName or (entry.finalImageName or null);
     in
-    imageName != null && (entry ? imageDigest);
+    imageName != null && (entry ? imageDigest) && (entry ? archiveHash);
 
   splitImageName =
     imageName:
@@ -72,6 +80,25 @@ let
     in
     "${mappedRegistry}/${parsed.repo}";
 
+  normalizeMirrorValue =
+    mirrorValue:
+    if builtins.isList mirrorValue then
+      mirrorValue
+    else if builtins.isString mirrorValue then
+      [ mirrorValue ]
+    else
+      [ ];
+
+  imageSources =
+    imageName:
+    let
+      parsed = splitImageName imageName;
+      mirrorValue = registryMirrors.${parsed.registry} or [ ];
+      mirrorRegs = normalizeMirrorValue mirrorValue;
+      mirrorSources = map (mirrorReg: "${mirrorReg}/${parsed.repo}") mirrorRegs;
+    in
+    lib.unique (mirrorSources ++ [ imageName ]);
+
   toMultiArchImageArchive =
     entry:
     let
@@ -79,22 +106,19 @@ let
       finalImageName = entry.finalImageName or imageName;
       finalImageTag = entry.finalImageTag or "latest";
       imageDigest = entry.imageDigest;
-      sourceImage = imageSource imageName;
-      safeName = lib.replaceStrings [ "/" ":" "@" ] [ "-" "-" "-" ] finalImageName;
-      safeTag = lib.replaceStrings [ "/" ":" ] [ "-" "-" ] finalImageTag;
-      safeDigest = lib.replaceStrings [ ":" ] [ "-" ] imageDigest;
+      sourceImages = imageSources imageName;
     in
-    pkgs.runCommand "${safeName}-${safeTag}-${safeDigest}.tar"
-      {
-        nativeBuildInputs = [
-          pkgs.skopeo
-        ];
-      }
-      ''
-        skopeo copy --insecure-policy --multi-arch all \
-          "docker://${sourceImage}@${imageDigest}" \
-          "oci-archive:$out:${finalImageName}:${finalImageTag}"
-      '';
+    mkMultiArchImageArchive {
+      inherit
+        pkgs
+        sourceImages
+        finalImageName
+        finalImageTag
+        imageDigest
+        mirrorRetries
+        ;
+      archiveHash = entry.archiveHash;
+    };
 
   selectedEntries = builtins.filter entryMatch lockEntries;
   validEntries = builtins.filter hasArchiveFields selectedEntries;
@@ -112,7 +136,7 @@ let
 
   _ =
     if skippedEntries > 0 then
-      builtins.trace "genFluxImageFiles skipped ${toString skippedEntries} lock entries missing fields required by multi-arch archive export (imageName/finalImageName, imageDigest)." null
+      throw "genFluxImageFiles found ${toString skippedEntries} lock entries missing fields required by multi-arch archive export (imageName/finalImageName, imageDigest, archiveHash)."
     else
       null;
 in
