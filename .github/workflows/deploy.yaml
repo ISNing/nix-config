@@ -74,7 +74,7 @@ jobs:
         run: |
           TARGET="${{ inputs.target || 'ci-autodeploy' }}"
 
-          nix develop --command just col "$TARGET"
+          nix run nixpkgs#colmena -- apply --on "@$TARGET" --verbose --show-trace
 
       - name: Cleanup SSH agent
         if: ${{ always() }}
