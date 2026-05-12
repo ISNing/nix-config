@@ -99,15 +99,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1778470969,
-        "narHash": "sha256-9/3+cdxH/bZ+grpJVk2s2aaDGCT8i0eJKMZk9G+hJaY=",
-        "owner": "isning",
+        "lastModified": 1778488437,
+        "narHash": "sha256-gT+Qkyln1vyMrTcsg6Tjm3Ll/lgPw1YoJTHPRaJ2ANw=",
+        "owner": "meowrch",
         "repo": "BlueVein",
-        "rev": "34cce90380270fda0e5b38141d5457c193fb7b25",
+        "rev": "ff7e6fe940325f3488eeaca4d251530ffaad691e",
         "type": "github"
       },
       "original": {
-        "owner": "isning",
+        "owner": "meowrch",
         "repo": "BlueVein",
         "type": "github"
       }

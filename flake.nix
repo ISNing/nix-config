@@ -148,7 +148,7 @@
     };
 
     bluevein = {
-      url = "github:isning/BlueVein";
+      url = "github:meowrch/BlueVein";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
