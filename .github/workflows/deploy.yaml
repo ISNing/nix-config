@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          nix eval --impure --raw --expr '
+          nix --accept-flake-config eval --impure --raw --expr '
             let
               flake = builtins.getFlake (toString ./.);
               lib = flake.inputs.nixpkgs.lib;
@@ -70,6 +70,11 @@ jobs:
           ' > ~/.ssh/known_hosts
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
+
+      - name: Trust flake nixConfig settings
+        run: |
+          set -euo pipefail
+          nix --accept-flake-config flake metadata .
 
       - name: Run Colmena Apply in devShell
         run: |
