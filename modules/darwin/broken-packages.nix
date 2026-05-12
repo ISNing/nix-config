@@ -18,6 +18,7 @@ let
     "gdb"
     "ncdu"
     "racket-minimal"
+    "ffmpeg-full"
   ];
 in
 {
