@@ -1,0 +1,85 @@
+name: Deploy NixOS with Colmena (devShell)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deploy target tag (e.g., ci-autodeploy)."
+        required: true
+        type: string
+        default: "ci-autodeploy"
+
+permissions:
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v11
+
+      - name: Setup Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v7
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: isning
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:ci
+
+      - name: Setup SSH agent
+        env:
+          COLMENA_SSH_PRIVATE_KEY: ${{ secrets.COLMENA_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          eval "$(ssh-agent -s)"
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-add - <<< "$COLMENA_SSH_PRIVATE_KEY"
+          unset COLMENA_SSH_PRIVATE_KEY
+
+      - name: Configure host key checking
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          nix eval --impure --raw --expr '
+            let
+              flake = builtins.getFlake (toString ./.);
+              lib = flake.inputs.nixpkgs.lib;
+              networking = import ./vars/networking.nix { inherit lib; };
+              lines = lib.mapAttrsToList (_: value: "${lib.concatStringsSep "," value.hostNames} ${value.publicKey}") networking.ssh.knownHosts;
+            in
+            lib.concatStringsSep "\n" lines
+          ' > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Run Colmena Apply in devShell
+        run: |
+          TARGET="${{ inputs.target || 'ci-autodeploy' }}"
+
+          nix develop --command just col "$TARGET"
+
+      - name: Cleanup SSH agent
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          if [ -n "${SSH_AGENT_PID:-}" ]; then
+            ssh-agent -k
+          fi

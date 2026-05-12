@@ -80,7 +80,9 @@ rec {
         {
           # Define the root user's host key for remote builders, so that nix can verify all the remote builders
 
+          saika.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMbTH2mluncgUj96jwSD1ADFUY//NvWFGanpACQ8n4Dx root@saika";
           amiya.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGBokNWi0OyCVjpM2hLYYRoefVN8vTSEnwoPe34JiGF/ ";
+          whitefox.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDAD4XvKvVpK/LBX44Nr9SzKkfbc0GTlYZObQ0uwchIT root@whitefox";
           # ruby.publicKey = "";
           # kana.publicKey = "";
 
