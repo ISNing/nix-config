@@ -1334,10 +1334,10 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1776082485,
-        "narHash": "sha256-Eok4O1CMUP1zNAWdiiVlPlSLAglRayp0VuIdOcGSpzA=",
+        "lastModified": 1778750635,
+        "narHash": "sha256-ymKRfzToYodxtVtbCVaSbqS8Pan6wibZLghUIzT8A+U=",
         "ref": "refs/heads/main",
-        "rev": "4080e412c6f95442beec020cdfc73bff12909251",
+        "rev": "9ed7d70d04f16fe0f74ec177b9d0c57404039f3a",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/isning/nix-secrets.git"
