@@ -72,14 +72,6 @@ let
       inherit registry repo;
     };
 
-  imageSource =
-    imageName:
-    let
-      parsed = splitImageName imageName;
-      mappedRegistry = registryMirrors.${parsed.registry} or parsed.registry;
-    in
-    "${mappedRegistry}/${parsed.repo}";
-
   normalizeMirrorValue =
     mirrorValue:
     if builtins.isList mirrorValue then
@@ -128,16 +120,13 @@ let
   toZstdImage =
     image:
     let
-      base = builtins.baseNameOf (toString image);
+      base = baseNameOf (toString image);
     in
     pkgs.runCommand "${base}.zst" { nativeBuildInputs = [ pkgs.zstd ]; } ''
       zstd -q -T0 -${toString zstdLevel} --stdout ${image} > "$out"
     '';
-
-  _ =
-    if skippedEntries > 0 then
-      throw "genFluxImageFiles found ${toString skippedEntries} lock entries missing fields required by multi-arch archive export (imageName/finalImageName, imageDigest, archiveHash)."
-    else
-      null;
 in
+assert
+  skippedEntries == 0
+  || throw "genFluxImageFiles found ${toString skippedEntries} lock entries missing fields required by multi-arch archive export (imageName/finalImageName, imageDigest, archiveHash).";
 if compressAsZstd then map toZstdImage archivedImages else archivedImages
