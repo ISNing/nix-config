@@ -1272,11 +1272,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1778587588,
-        "narHash": "sha256-+/5hPawefxgRPShE9+2ZUruFZliEJeET/Yp5FE1t39s=",
+        "lastModified": 1778731959,
+        "narHash": "sha256-bPmH8QZiUXNYJ6k+lsz4HJhm92ZVt0z1gqJBEIb7fo8=",
         "owner": "isning",
         "repo": "k8s-gitops",
-        "rev": "35529a8f0a22749e02097b94ac61a0bbff1e94a0",
+        "rev": "1e1efd67350c471ee0698ad39aa259208e520087",
         "type": "github"
       },
       "original": {
