@@ -15,39 +15,32 @@
 #############################################################
 let
   hostName = "whitefox"; # Define your hostname.
-  fluxImageFiles = mylib.genFluxImageFiles {
-    inherit pkgs;
-    inherit k8s-gitops;
-    fluxSource = k8s-gitops;
-    fluxPath = "clusters/kubevirt-lab-1";
-    registryMirrors = {
-      "docker.io" = [
-        "dockerproxy.net"
-        "docker.1ms.run"
-      ];
-      "ghcr.io" = [
-        "ghcr.dockerproxy.net"
-        "ghcr.nju.edu.cn"
-      ];
-      "quay.io" = [
-        "quay.dockerproxy.net"
-        "quay.nju.edu.cn"
-      ];
-    };
-    mirrorRetries = 3;
-    compressAsZstd = true;
-    zstdLevel = 10;
-    # Only include images whose source chain contains flux-system/infra-controllers
-    customFilter =
-      entry:
-      let
-        sourceChains = entry.sourceChains or [ ];
-        includeInfra = builtins.any (
-          chain: builtins.any (source: lib.hasPrefix "infra-" source.name) chain
-        ) sourceChains;
-      in
-      includeInfra;
-  };
+  fluxImageFiles = mylib.genFluxImageFiles (
+    {
+      inherit pkgs;
+      inherit k8s-gitops;
+      fluxSource = k8s-gitops;
+      fluxPath = "clusters/kubevirt-lab-1";
+      compressAsZstd = true;
+      zstdLevel = 10;
+      # Only include images whose source chain contains flux-system/infra-controllers
+      customFilter =
+        entry:
+        let
+          sourceChains = entry.sourceChains or [ ];
+          includeInfra = builtins.any (
+            chain: builtins.any (source: lib.hasPrefix "infra-" source.name) chain
+          ) sourceChains;
+        in
+        includeInfra;
+    }
+    // lib.optionalAttrs (myvars.mirrors ? registryMirrors) {
+      registryMirrors = myvars.mirrors.registryMirrors;
+    }
+    // lib.optionalAttrs (myvars.mirrors ? mirrorRetries) {
+      mirrorRetries = myvars.mirrors.mirrorRetries;
+    }
+  );
 
   coreModule = mylib.genKubeVirtHostModule {
     inherit pkgs hostName;

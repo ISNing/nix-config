@@ -77,7 +77,7 @@ jobs:
             accept-flake-config = true
         run: |
           TARGET="${{ inputs.target || 'ci-autodeploy' }}"
-
+          rm -rf ./vars/mirrors.nix
           nix develop .#ci --command just col "$TARGET"
 
       - name: Cleanup SSH agent
