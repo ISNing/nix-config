@@ -71,12 +71,10 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Trust flake nixConfig settings
-        run: |
-          set -euo pipefail
-          nix --accept-flake-config flake metadata .
-
       - name: Run Colmena Apply in devShell
+        env:
+          NIX_CONFIG: |
+            accept-flake-config = true
         run: |
           TARGET="${{ inputs.target || 'ci-autodeploy' }}"
 
