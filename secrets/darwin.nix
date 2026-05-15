@@ -77,8 +77,8 @@
       # user can read this file.
       # ---------------------------------------------
 
-      "ssh-key-backup" = {
-        file = "${mysecrets}/ssh-key-backup.age";
+      "ssh-key-romantic" = {
+        file = "${mysecrets}/ssh-key-romantic.age";
       }
       // user_readable;
     };
@@ -96,8 +96,8 @@
     #   source = config.age.secrets."rclone.conf".path;
     # };
 
-    "agenix/ssh-key-backup" = {
-      source = config.age.secrets."ssh-key-backup".path;
+    "agenix/ssh-key-romantic" = {
+      source = config.age.secrets."ssh-key-romantic".path;
     };
 
     # "agenix/ryan4yin-gpg-subkeys.priv.age" = {

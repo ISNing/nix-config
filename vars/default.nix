@@ -25,11 +25,11 @@
     # The main ssh keys for daily usage
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN/wxdP/w0q2X9SELC4y4F81dYYUew/baMlO5dgJZy49 isning@saika"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKRpXtuI08Cq+6xNOCanfP4SUaIcUZoReXHhxXT0kUAo isning@amiya"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4yUfU+27vsRWhX/6a8SL488JAocphdDDx4IvbW19rz isning@bitwarden"
 
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDKMZeMyimw5rvWBJEGw5MG8CKteZ7h4sfSUgavet8Y+ nix-config-deploy@github-actions"
   ];
   secondaryAuthorizedKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILwqgcejmVp/xPDKFoi55SPd+6ddBPBKQPlJDzI/tg86 isning@romantic"
     # the backup ssh keys for disaster recovery
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGVXlSkmuK1xLeqEY3knH9DdMjwByft+1dHEC1qXXaFY isning@backup"
   ];

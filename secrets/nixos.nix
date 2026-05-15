@@ -122,16 +122,16 @@ in
         # user can read this file.
         # ---------------------------------------------
 
-        "ssh-key-backup" = {
-          file = "${mysecrets}/ssh-key-backup.age";
+        "ssh-key-romantic" = {
+          file = "${mysecrets}/ssh-key-romantic.age";
         }
         // user_readable;
       };
 
       # place secrets in /etc/
       environment.etc = {
-        "agenix/ssh-key-backup" = {
-          source = config.age.secrets."ssh-key-backup".path;
+        "agenix/ssh-key-romantic" = {
+          source = config.age.secrets."ssh-key-romantic".path;
           mode = "0600";
           user = myvars.username;
         };
