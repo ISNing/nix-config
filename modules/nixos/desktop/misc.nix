@@ -42,5 +42,11 @@
         thunar-volman
       ];
     };
+
+    # local file sharing tool
+    localsend = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 }
