@@ -178,23 +178,11 @@ in
         # ======================================
         # Cloud Native
         # ======================================
-        {
-          # pulumi - infrastructure as code
-          directory = ".pulumi";
-          mode = "0700";
-        }
-        {
-          directory = ".aws";
-          mode = "0700";
-        }
-        {
-          directory = ".aliyun";
-          mode = "0700";
-        }
-        {
-          directory = ".config/gcloud";
-          mode = "0700";
-        }
+        # {
+        #   # pulumi - infrastructure as code
+        #   directory = ".pulumi";
+        #   mode = "0700";
+        # }
         {
           directory = ".docker";
           mode = "0700";
@@ -253,24 +241,16 @@ in
         "Games"
         ".steam"
         ".config/blender"
-        ".config/LDtk"
-        ".config/heroic"
         ".config/lutris"
         ".local/share/umu"
 
         ".local/share/Steam"
-        ".local/state/Heroic"
 
         ".local/share/lutris"
-        ".local/share/tiled"
-        ".local/share/GOG.com"
-        ".local/share/StardewValley"
-        ".local/share/feral-interactive"
 
         # ======================================
         # Meeting / Remote Desktop / Recording
         # ======================================
-        ".zoom"
         ".config/obs-studio"
         ".config/sunshine"
         ".config/freerdp"
@@ -303,12 +283,11 @@ in
           directory = ".var";
           mode = "0700";
         }
-        # Waydroid data
-        ".local/share/waydroid"
 
         # ======================================
         # Misc
         # ======================================
+        ".local/share/applications" # For persistence of Chrome PWAs
 
         # Clash Verge Rev
         ".local/share/io.github.clash-verge-rev.clash-verge-rev"
