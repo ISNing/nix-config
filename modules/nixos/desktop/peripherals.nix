@@ -4,6 +4,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     pulseaudio # provides `pactl`, which is required by some apps(e.g. sonic-pi)
+    libfido2 # for security keys like yubikey
     libwacom # for tablets
     overskride
   ];
