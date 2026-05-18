@@ -1,4 +1,8 @@
-{ mylib, pkgs, ... }:
+{
+  mylib,
+  pkgs,
+  ...
+}:
 {
   # wayland related
   home.sessionVariables = {
