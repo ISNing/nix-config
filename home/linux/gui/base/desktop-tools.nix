@@ -16,7 +16,6 @@
   };
 
   home.packages = with pkgs; [
-    swaybg # the wallpaper
     wl-clipboard # copying and pasting
     hyprpicker # color picker
     brightnessctl
@@ -24,18 +23,6 @@
     alsa-utils # provides amixer/alsamixer/...
     networkmanagerapplet # provide GUI app: nm-connection-editor
     # screenshot/screencast
-    flameshot
-    hyprshot # screen shot
     wf-recorder # screen recording
   ];
-
-  # screen locker
-  programs.swaylock.enable = true;
-
-  # Logout Menu
-  programs.wlogout.enable = true;
-
-  # clipboard manager
-  services.wl-clip-persist.enable = true; # persist clipboard after app exits
-  services.clipse.enable = true; # clipboard history manager with GUI
 }
