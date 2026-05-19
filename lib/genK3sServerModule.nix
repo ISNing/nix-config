@@ -26,7 +26,7 @@
 }:
 let
   lib = pkgs.lib;
-  package = pkgs.k3s;
+  package = pkgs.k3s_1_36;
 in
 {
   environment.systemPackages = with pkgs; [
