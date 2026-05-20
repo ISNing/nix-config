@@ -38,6 +38,19 @@
         identitiesOnly = true;
       };
 
+      "router.319.ccsn.dev" = {
+        hostname = "router.319.ccsn.dev";
+        port = 22;
+        user = "tunnel";
+      };
+
+      "isning-nosql.319.local" = {
+        hostname = "192.168.1.98";
+        port = 22;
+        user = "root";
+        proxyJump = "router.319.ccsn.dev";
+      };
+
       # "192.168.*" = {
       #   # "allow to securely use local SSH agent to authenticate on the remote machine."
       #   # "It has the same effect as adding cli option `ssh -A user@host`"
