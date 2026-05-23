@@ -2018,11 +2018,11 @@
         "pre-commit-hooks": "pre-commit-hooks_3"
       },
       "locked": {
-        "lastModified": 1778387092,
-        "narHash": "sha256-qJnqgmRiEeYwvUKErzWADPaECAemy0MvnORXbaTRbMI=",
+        "lastModified": 1779545909,
+        "narHash": "sha256-+fD6Ig/3iAE4gOaQOYJN+awotmQNzZy0DIiPKyvbfeg=",
         "owner": "isning",
         "repo": "nur-packages",
-        "rev": "6d282387352fdc8bb21ec823093ee1d5ff0131a2",
+        "rev": "ecbfe467e3e9778e4949e5e2f2fb8b321ba95299",
         "type": "github"
       },
       "original": {
@@ -2146,11 +2146,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776796298,
-        "narHash": "sha256-PcRvlWayisPSjd0UcRQbhG8Oqw78AcPE6x872cPRHN8=",
+        "lastModified": 1778507602,
+        "narHash": "sha256-kTwur1wV+01SdqskVMSo6JMEpg71ps3HpbFY2GsflKs=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "3cfd774b0a530725a077e17354fbdb87ea1c4aad",
+        "rev": "61ab0e80d9c7ab14c256b5b453d8b3fb0189ba0a",
         "type": "github"
       },
       "original": {
