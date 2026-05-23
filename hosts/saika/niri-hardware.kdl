@@ -34,7 +34,7 @@ output "eDP-1" {
 output "HKC OVERSEAS LIMITED G27M7Pro 0000000000001" {
     // scale 1.5 (auto)
     transform "normal"
-    mode "3840x2160@143.999"
+    mode "3840x2160@120.000"
     position x=-2560 y=0 // on the left of eDP-1
     variable-refresh-rate on-demand=true
     focus-at-startup
