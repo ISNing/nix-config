@@ -160,8 +160,9 @@ in
       "nikitabobko/tap/aerospace" # an i3-like tiling window manager for macOS
       "ghostty" # terminal emulator
 
+      "siyuan" # note taking app
       # https://joplinapp.org/help/
-      "joplin" # note taking app
+      # "joplin" # note taking app
 
       "tailscale-app" # tailscale macos app (with gui)
 
