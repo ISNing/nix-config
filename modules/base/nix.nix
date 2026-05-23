@@ -30,7 +30,8 @@
       "https://mirrors.sjtug.sjtu.edu.cn/nix-channels/store"
 
       "https://mirror.nju.edu.cn/nix-channels/store"
-      "https://mirrors.cqupt.edu.cn/nix-channels/store"
+      # Using WAF before mirror, causing 468, maybe low rps limit?
+      # "https://mirrors.cqupt.edu.cn/nix-channels/store"
 
       "https://nix-community.cachix.org"
 
