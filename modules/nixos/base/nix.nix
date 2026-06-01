@@ -14,6 +14,10 @@
   # to install chrome, you need to enable unfree packages
   nixpkgs.config.allowUnfree = lib.mkForce true;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10" # FIXME: bitwarden-desktop requires electron 39: https://github.com/bitwarden/clients/pull/20448
+  ];
+
   # do garbage collection weekly to keep disk usage low
   nix.gc = {
     automatic = lib.mkDefault true;

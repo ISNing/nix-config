@@ -39,10 +39,9 @@
     # Find git commit hash with build status here(3 jobs per day):
     # https://hydra.nixos.org/jobset/nixpkgs/unstable
     # update via nix flake update nixpkgs --override-input nixpkgs github:NixOS/nixpkgs/<commit-hash>
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
 
     # nixpkgs with some custom patches
     nixpkgs-patched.url = "github:ryan4yin/nixpkgs/nixos-unstable-patched";
