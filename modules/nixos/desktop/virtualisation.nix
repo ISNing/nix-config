@@ -1,4 +1,5 @@
 {
+  myvars,
   pkgs,
   nur-ataraxiasjel,
   ...
@@ -59,6 +60,13 @@
     # };
 
     # lxd.enable = true;
+  };
+
+  users.users."${myvars.username}" = {
+    # Keep the user's Podman socket available for rootless docker-compatible tools.
+    linger = true;
+    # NixOS allocates a non-overlapping 65536-id subordinate uid/gid range.
+    autoSubUidGidRange = true;
   };
 
   environment.systemPackages = with pkgs; [
