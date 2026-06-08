@@ -1,4 +1,8 @@
-{ catppuccin, ... }:
+{
+  catppuccin,
+  pkgs,
+  ...
+}:
 {
   # https://github.com/catppuccin/nix
   imports = [
@@ -8,6 +12,11 @@
   catppuccin = {
     # The default `enable` value for all available programs.
     enable = true;
+    sources = catppuccin.packages.${pkgs.stdenv.hostPlatform.system}.overrideScope (
+      _final: _prev: {
+        whiskers = pkgs.catppuccin-whiskers;
+      }
+    );
     # one of "latte", "frappe", "macchiato", "mocha"
     flavor = "mocha";
     # one of "blue", "flamingo", "green", "lavender", "maroon", "mauve", "peach", "pink", "red", "rosewater", "sapphire", "sky", "teal", "yellow"
