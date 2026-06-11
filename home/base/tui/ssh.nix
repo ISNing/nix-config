@@ -51,6 +51,27 @@
         proxyJump = "router.319.ccsn.dev";
       };
 
+      "kubevirt-dl160" = {
+        hostname = "192.168.1.161";
+        port = 22;
+        user = "snc";
+        proxyJump = "router.319.ccsn.dev";
+      };
+
+      "kubevirt-t410" = {
+        hostname = "192.168.1.162";
+        port = 22;
+        user = "snc";
+        proxyJump = "router.319.ccsn.dev";
+      };
+
+      "kubevirt-dl380" = {
+        hostname = "192.168.1.163";
+        port = 22;
+        user = "root";
+        proxyJump = "router.319.ccsn.dev";
+      };
+
       # "192.168.*" = {
       #   # "allow to securely use local SSH agent to authenticate on the remote machine."
       #   # "It has the same effect as adding cli option `ssh -A user@host`"

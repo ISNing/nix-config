@@ -1,0 +1,186 @@
+--- orig/arch/x86/include/asm/topology.h	2026-06-12 11:21:20.033601737 +0800
++++ new/arch/x86/include/asm/topology.h	2026-06-12 11:21:31.947225801 +0800
+@@ -309,6 +309,8 @@
+ #define arch_scale_freq_capacity arch_scale_freq_capacity
+ 
+ bool arch_enable_hybrid_capacity_scale(void);
++void arch_disable_hybrid_capacity_scale(void);
++void arch_reenable_hybrid_capacity_scale(void);
+ void arch_set_cpu_capacity(int cpu, unsigned long cap, unsigned long max_cap,
+ 			   unsigned long cap_freq, unsigned long base_freq);
+ 
+@@ -319,6 +321,8 @@
+ extern void freq_invariance_set_perf_ratio(u64 ratio, bool turbo_disabled);
+ #else
+ static inline bool arch_enable_hybrid_capacity_scale(void) { return false; }
++static inline void arch_disable_hybrid_capacity_scale(void) { }
++static inline void arch_reenable_hybrid_capacity_scale(void) { }
+ static inline void arch_set_cpu_capacity(int cpu, unsigned long cap,
+ 					 unsigned long max_cap,
+ 					 unsigned long cap_freq,
+--- orig/arch/x86/kernel/cpu/aperfmperf.c	2026-06-12 11:21:20.033601737 +0800
++++ new/arch/x86/kernel/cpu/aperfmperf.c	2026-06-12 11:21:31.949046461 +0800
+@@ -412,6 +412,22 @@
+  * to let the scheduler know that capacity-aware scheduling can be used going
+  * forward.
+  */
++void arch_disable_hybrid_capacity_scale(void)
++{
++	static_branch_disable(&arch_hybrid_cap_scale_key);
++}
++EXPORT_SYMBOL_GPL(arch_disable_hybrid_capacity_scale);
++
++void arch_reenable_hybrid_capacity_scale(void)
++{
++	if (static_branch_unlikely(&arch_hybrid_cap_scale_key))
++		return;
++	/* Memory was already allocated at boot - no alloc needed. */
++	static_branch_enable(&arch_hybrid_cap_scale_key);
++	pr_info("Hybrid CPU capacity scaling enabled\n");
++}
++EXPORT_SYMBOL_GPL(arch_reenable_hybrid_capacity_scale);
++
+ void arch_set_cpu_capacity(int cpu, unsigned long cap, unsigned long max_cap,
+ 			   unsigned long cap_freq, unsigned long base_freq)
+ {
+--- orig/arch/x86/kernel/smpboot.c	2026-06-12 11:21:20.033601737 +0800
++++ new/arch/x86/kernel/smpboot.c	2026-06-12 11:22:08.158556034 +0800
+@@ -61,6 +61,7 @@
+ #include <linux/cpuhotplug.h>
+ #include <linux/mc146818rtc.h>
+ #include <linux/acpi.h>
++#include <linux/sched/smt.h>
+ 
+ #include <asm/acpi.h>
+ #include <asm/cacheinfo.h>
+@@ -128,10 +129,16 @@
+ 
+ int arch_update_cpu_topology(void)
+ {
++	static bool prev_smt_active = true;
+ 	int retval = x86_topology_update;
++	bool smt_changed;
+ 
+ 	x86_topology_update = false;
+-	return retval;
++
++	smt_changed = sched_smt_active() != prev_smt_active;
++	prev_smt_active = sched_smt_active();
++
++	return retval || smt_changed;
+ }
+ 
+ static unsigned int smpboot_warm_reset_vector_count;
+--- orig/drivers/cpufreq/intel_pstate.c	2026-06-12 11:21:20.037601778 +0800
++++ new/drivers/cpufreq/intel_pstate.c	2026-06-12 11:22:25.616563518 +0800
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/kernel_stat.h>
++#include <linux/cpuhotplug.h>
+ #include <linux/module.h>
+ #include <linux/ktime.h>
+ #include <linux/hrtimer.h>
+@@ -1160,17 +1161,64 @@
+ 	 * On hybrid systems, use asym capacity instead of ITMT, but because
+ 	 * the capacity of SMT threads is not deterministic even approximately,
+ 	 * do not do that when SMT is in use.
++	 *
++	 * With dynamic SMT/EAS we allocate per-CPU data at boot but only
++	 * enable the static key (and clear ITMT) when SMT is off *right now*.
++	 * Runtime SMT toggles are handled via the cpuhp workqueue below.
+ 	 */
+-	if (hwp_is_hybrid && !cpu_smt_possible() && arch_enable_hybrid_capacity_scale()) {
++	if (hwp_is_hybrid && arch_enable_hybrid_capacity_scale()) {
++		/* Always populate capacity values at boot. */
+ 		hybrid_refresh_cpu_capacity_scaling();
+-		/*
+-		 * Disabling ITMT causes sched domains to be rebuilt to disable asym
+-		 * packing and enable asym capacity and EAS.
+-		 */
+-		sched_clear_itmt_support();
++		if (!sched_smt_active()) {
++			/* SMT off at boot (e.g. nosmt) - keep key enabled. */
++			sched_clear_itmt_support();
++		} else {
++			/* SMT on - disable key (capacity data stays in memory). */
++			arch_disable_hybrid_capacity_scale();
++		}
+ 	}
+ }
+ 
++
++/* ---- dynamic SMT / EAS workqueue ------------------------------ */
++
++static void intel_pstate_smt_work_fn(struct work_struct *work)
++{
++	static bool prev_smt_active = true;
++	bool smt_active = sched_smt_active();
++
++	if (smt_active == prev_smt_active)
++		return;
++	prev_smt_active = smt_active;
++
++	if (smt_active) {
++		arch_disable_hybrid_capacity_scale();
++		sched_set_itmt_support();
++		return;
++	}
++	arch_reenable_hybrid_capacity_scale();
++	hybrid_refresh_cpu_capacity_scaling();
++	sched_clear_itmt_support();
++}
++static DECLARE_DELAYED_WORK(intel_pstate_smt_work, intel_pstate_smt_work_fn);
++
++static void intel_pstate_schedule_smt_check(void)
++{
++	schedule_delayed_work(&intel_pstate_smt_work, msecs_to_jiffies(10));
++}
++
++static int intel_pstate_smt_cpuhp_online(unsigned int cpu)
++{
++	intel_pstate_schedule_smt_check();
++	return 0;
++}
++
++static int intel_pstate_smt_cpuhp_offline(unsigned int cpu)
++{
++	intel_pstate_schedule_smt_check();
++	return 0;
++}
++
+ static bool hybrid_clear_max_perf_cpu(void)
+ {
+ 	bool ret;
+@@ -3905,6 +3953,10 @@
+ 		pr_warn("Problematic setup: Hybrid processor with disabled HWP\n");
+ 	}
+ 
++	cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "intel_pstate:smt",
++		  intel_pstate_smt_cpuhp_online,
++		  intel_pstate_smt_cpuhp_offline);
++
+ 	return 0;
+ }
+ device_initcall(intel_pstate_init);
+--- orig/kernel/sched/topology.c	2026-06-12 11:21:20.037601778 +0800
++++ new/kernel/sched/topology.c	2026-06-12 11:22:30.104607194 +0800
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/sched/isolation.h>
+ #include <linux/bsearch.h>
++#include <linux/energy_model.h>
+ #include "sched.h"
+ 
+ DEFINE_MUTEX(sched_domains_mutex);
+@@ -2920,6 +2921,10 @@
+ 	sched_energy_set(has_eas);
+ #endif
+ 
++	/* Sync EM with current arch_scale_cpu_capacity() after topology changes */
++	for_each_online_cpu(i)
++		em_adjust_cpu_capacity(i);
++
+ 	/* Remember the new sched domains: */
+ 	if (doms_cur != &fallback_doms)
+ 		free_sched_domains(doms_cur, ndoms_cur);

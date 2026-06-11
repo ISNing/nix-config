@@ -313,6 +313,9 @@ in
         ".config/libreoffice"
 
         ".config/nushell"
+
+        # Minecraft
+        ".minecraft"
       ];
       files = [
         {

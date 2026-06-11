@@ -1,0 +1,27 @@
+From: Álvaro Fernández Rojas <noltari@gmail.com>
+Subject: [PATCH] intel_idle: Add RaptorLake support
+Date: Thu, 19 Jan 2023 08:02:05 +0100
+
+This patch adds RaptorLake support to the intel_idle driver.
+
+Since RaptorLake and AlderLake C-state are characteristics the same, we use
+AlderLake C-states tables for RaptorLake as well.
+
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+---
+ drivers/idle/intel_idle.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+index cfeb24d40d37..1a35b98d9bae 100644
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -1669,6 +1669,9 @@ static const struct x86_cpu_id intel_idle_ids[] __initconst = {
+ 	X86_MATCH_VFM(INTEL_ALDERLAKE,		&idle_cpu_adl),
+ 	X86_MATCH_VFM(INTEL_ALDERLAKE_L,	&idle_cpu_adl_l),
++	X86_MATCH_VFM(INTEL_RAPTORLAKE,	&idle_cpu_adl),
++	X86_MATCH_VFM(INTEL_RAPTORLAKE_P,	&idle_cpu_adl_l),
++	X86_MATCH_VFM(INTEL_RAPTORLAKE_S,	&idle_cpu_adl),
+ 	X86_MATCH_VFM(INTEL_METEORLAKE_L,	&idle_cpu_mtl_l),
+ 	X86_MATCH_VFM(INTEL_ATOM_GRACEMONT,	&idle_cpu_gmt),
+ };

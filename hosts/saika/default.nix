@@ -24,6 +24,7 @@ in
     ./secureboot.nix
     ./boot.nix
     ./bitlk-decrypt.nix
+    ./power.nix
   ];
 
   services.sunshine.enable = lib.mkForce true;
@@ -39,8 +40,11 @@ in
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [ pkgs.hplipWithPlugin ];
 
-  # Tuned is enabled at modules/nixos/desktop/power.nix
+  # HibernateMode=shutdown ensures the system powers off after hibernation
+  # instead of relying on S4 sleep state, which can be unreliable on some firmware.
+  systemd.sleep.settings.Sleep.HibernateMode = "shutdown";
 
   systemd.oomd = {
     enableSystemSlice = true;

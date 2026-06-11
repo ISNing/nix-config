@@ -135,6 +135,18 @@ niri mode="default":
   use {{utils_nu}} *;
   nixos-switch $"(hostname)-niri" {{mode}}
 
+# Check EAS/CAS status for current profile (saika)
+[linux]
+[group('saika')]
+saika-check-eas:
+  hosts/saika/check-eas-cas.sh
+
+# Check EAS/CAS for ALL profiles (saika)
+[linux]
+[group('saika')]
+saika-check-eas-all:
+  sudo hosts/saika/check-eas-cas.sh --all
+
 ############################################################################
 #
 #  Darwin related commands

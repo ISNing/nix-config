@@ -43,6 +43,12 @@ in
         # Sed-like editor for binary files
         # required by some games to fix problems
         bbe
+
+        (hmcl.override {
+          minecraftJdks = [
+            graalvmPackages.graalvm-ce
+          ];
+        })
       ])
       ++ (with pkgs-x64; [
         # a game launcher - great for epic games and gog games
