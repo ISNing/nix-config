@@ -14,4 +14,12 @@
 
   services.power-profiles-daemon.enable = false; # conflicts with tuned
   services.tlp.enable = false; # conflicts with tuned
+
+  # scx_lavd scheduler for better power and performance
+  # In theory, it should help with lower latency at gaming and avoid frequent CPU awake from deep C-states
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+    extraArgs = [ "--autopower" ];
+  };
 }
