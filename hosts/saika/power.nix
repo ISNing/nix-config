@@ -1,47 +1,5 @@
 { lib, pkgs, ... }:
 {
-  # ------------------------------------------------------------------
-  #  EAS (Energy-Aware Scheduling) support on hybrid Intel CPUs
-  #
-  #  Design:
-  #  - Saika has an Intel Meteor Lake hybrid CPU (P-cores + E-cores).
-  #  - EAS requires `intel_pstate=passive` + `schedutil` governor.
-  #  - EAS also requires no SMT; we toggle SMT at runtime via the
-  #    battery profile (see below), which triggers CPU hotplug and
-  #    sched domain rebuild, letting EAS evaluate its enable
-  #    conditions dynamically.
-  #
-  #  Downside: intel_pstate passive mode uses software governor
-  #  instead of hardware HWP. Acceptable trade-off for EAS.
-  # ------------------------------------------------------------------
-  boot.kernelParams = [ "intel_pstate=passive" ];
-
-  boot.kernelPatches = [
-    {
-      name = "dynamic-smt-eas";
-      patch = ./patches/dynamic-smt-eas.patch;
-    }
-    {
-      name = "intel-idle-raptorlake";
-      patch = ./patches/intel-idle-raptorlake.patch;
-    }
-  ];
-
-  # Default governor from boot, before TuneD starts.
-  powerManagement.cpuFreqGovernor = "schedutil";
-
-  # Override AC profiles so all tuned-ppd states use schedutil.
-  # Without this, "balanced" and "performance" fall back to their
-  # built-in governors (powersave/performance), which disable EAS.
-  services.tuned.profiles."balanced" = {
-    main.include = "balanced";
-    cpu.scaling_governor = "schedutil";
-  };
-
-  services.tuned.profiles."performance" = {
-    main.include = "performance";
-    cpu.scaling_governor = "schedutil";
-  };
 
   # Only apply the battery-tailored profile when on battery.
   # tuned-ppd handles the AC↔battery transition automatically.
@@ -55,8 +13,8 @@
     };
     cpu = {
       energy_perf_bias = "power";
-      scaling_governor = "schedutil";
-      # turbo = "0";
+      boost = "1";
+      force_latency = "None";
     };
     sysfs = {
       # Enable PCI runtime PM for all devices. This allows
@@ -65,6 +23,9 @@
       "/sys/bus/pci/devices/*/power/control" = "auto";
       # Wake immediately — no delay before suspending PCI devices.
       "/sys/bus/pci/devices/*/power/autosuspend_delay_ms" = "0";
+
+      "/sys/firmware/acpi/platform_profile" = "low-power";
+      "/sys/module/pcie_aspm/parameters/policy" = "powersupersave";
 
       # Disable SMT on battery. The kernel's sched domain rebuild
       # (triggered by CPU hotplug) re-evaluates EAS conditions.
