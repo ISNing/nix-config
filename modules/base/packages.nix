@@ -28,7 +28,8 @@
     xz
     zstd
     unzipNLS
-    p7zip
+    # Required for unzipping rar files. UNFREE.
+    p7zip-rar
 
     # Text Processing
     # Docs: https://github.com/learnbyexample/Command-line-text-processing
