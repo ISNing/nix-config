@@ -26,8 +26,6 @@
   boot.kernelParams = [
     # "i915.force_probe=!a78b"
     # "xe.force_probe=a78b"
-    "pcie_aspm=force"
-    "pcie_aspm.policy=powersave"
   ];
   # Video acceleration has already been configured by nixos-hardware module
 
