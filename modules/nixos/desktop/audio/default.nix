@@ -222,6 +222,24 @@ in
       security.rtkit.enable = true;
       # Disable pulseaudio, it conflicts with pipewire too.
       services.pulseaudio.enable = false;
+
+      # systemd default LimitMEMLOCK=8M / LimitRTPRIO=0 causes
+      # sched_setscheduler() failure in libpipewire-module-rt
+      systemd.user.services.pipewire.serviceConfig = {
+        LimitMEMLOCK = "infinity";
+        LimitRTPRIO = "99";
+        LimitNICE = "-20";
+      };
+      systemd.user.services.pipewire-pulse.serviceConfig = {
+        LimitMEMLOCK = "infinity";
+        LimitRTPRIO = "99";
+        LimitNICE = "-20";
+      };
+      systemd.user.services.wireplumber.serviceConfig = {
+        LimitMEMLOCK = "infinity";
+        LimitRTPRIO = "99";
+        LimitNICE = "-20";
+      };
     }
 
     (mkIf cfgSpeaker.enable {

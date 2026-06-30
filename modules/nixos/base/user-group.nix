@@ -34,6 +34,7 @@
       "wireshark"
       "adbusers" # android debugging
       "libvirtd" # virt-viewer / qemu
+      "pipewire"
     ];
   };
 
