@@ -11,6 +11,7 @@ Installed via Nix:
 - claude-code
 - gemini-cli
 - opencode
+- codegraph
 
 Install Manually:
 
@@ -19,6 +20,18 @@ Install Manually:
 uv tool install --python 3.13 kimi-cli
 uv tool upgrade kimi-cli --no-cache
 ```
+
+## CodeGraph MCP (semantic code intelligence)
+
+```bash
+codegraph install         # wire up MCP server to agents (one-time)
+codegraph init            # build per-project knowledge graph index
+codegraph explore <q>     # query symbols, call paths, blast radius
+codegraph status          # verify index freshness
+```
+
+`codegraph install` is one-time; `codegraph init` must be run once per project. The MCP server
+auto-syncs on file changes — no need to re-run manually.
 
 ## Optional tooling
 

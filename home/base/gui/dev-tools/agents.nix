@@ -9,6 +9,7 @@
     opencode
 
     # Utilities
+    codegraph # pre-indexed code knowledge graph, auto syncs on code changes
     rtk # CLI proxy that reduces LLM token consumption
   ];
 }
