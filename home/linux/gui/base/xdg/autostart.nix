@@ -8,6 +8,8 @@
 
     "${pkgs.clash-verge-rev}/share/applications/clash-verge.desktop"
 
+    "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop"
+
     # nixpaks
     "${pkgs.nixpaks.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
   ]
