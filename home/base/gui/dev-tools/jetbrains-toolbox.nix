@@ -1,6 +1,6 @@
-{ pkgs, nur-isning, ... }:
+{ pkgs-master, nur-isning, ... }:
 {
   home.packages = [
-    (pkgs.callPackage nur-isning { }).jetbrains-toolbox
+    pkgs-master.jetbrains-toolbox
   ];
 }
