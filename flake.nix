@@ -141,6 +141,11 @@
     # AI coding agents
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    open-design = {
+      url = "github:nexu-io/open-design";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell/v4.7.5";
       inputs.nixpkgs.follows = "nixpkgs";

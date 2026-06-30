@@ -12,6 +12,7 @@ Installed via Nix:
 - gemini-cli
 - opencode
 - codegraph
+- open-design
 
 Install Manually:
 
@@ -32,6 +33,15 @@ codegraph status          # verify index freshness
 
 `codegraph install` is one-time; `codegraph init` must be run once per project. The MCP server
 auto-syncs on file changes — no need to re-run manually.
+
+## Open Design
+
+```bash
+opendesign    # launch the on-demand design CLI daemon
+```
+
+Open Design (`github:nexu-io/open-design`) provides an on-demand design workflow CLI.
+Wrapped as `opendesign` shell script that forwards to the daemon binary.
 
 ## Optional tooling
 
