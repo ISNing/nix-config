@@ -19,6 +19,7 @@
     mesa-demos
     nvitop
     (pkgs-x64.zoom-us)
+    nur.repos.lonerOrz.kazumi
   ];
 
   programs.mpv = {

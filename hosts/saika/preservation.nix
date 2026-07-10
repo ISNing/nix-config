@@ -248,6 +248,9 @@ in
 
         ".local/share/lutris"
 
+        # Kazumi - anime tracker/player
+        ".local/share/io.github.Predidit.Kazumi"
+
         # ======================================
         # Meeting / Remote Desktop / Recording
         # ======================================
