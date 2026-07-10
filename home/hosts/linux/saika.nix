@@ -5,7 +5,7 @@ in
 {
   imports = [ ../../linux/gui.nix ];
 
-  programs.ssh.matchBlocks."github.com".identityFile = "${config.home.homeDirectory}/.ssh/saika";
+  programs.ssh.settings."github.com".IdentityFile = "${config.home.homeDirectory}/.ssh/saika";
 
   modules.desktop.gaming.enable = true;
   modules.desktop.niri.enable = true;

@@ -37,6 +37,7 @@
         wrapProgram $out/bin/noctalia \
           --prefix PATH : ${pkgs.ddcutil}/bin
       '';
+      meta.mainProgram = "noctalia";
     };
 
   home.file."Pictures/Wallpapers".source = wallpapers;
