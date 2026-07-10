@@ -133,11 +133,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    blender-bin = {
-      url = "github:edolstra/nix-warez?dir=blender";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nixos-apple-silicon = {
       # asahi-6.17.7-2
       url = "github:nix-community/nixos-apple-silicon";
