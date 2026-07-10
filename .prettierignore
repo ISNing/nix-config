@@ -6,4 +6,5 @@ vercel.json
 cache
 temp
 .temp
-home/linux/gui/base/noctalia/config/settings.json
+# Noctalia v4 settings.json is no longer used (migrated to v5 TOML)
+# home/linux/gui/base/noctalia/config/settings.json

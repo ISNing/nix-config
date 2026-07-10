@@ -17,12 +17,14 @@
     # substituers will be appended to the default substituters when fetching packages
     extra-substituters = [
       "https://cache.numtide.com"
+      "https://noctalia.cachix.org"
       # "https://nix-gaming.cachix.org"
       # "https://nixpkgs-wayland.cachix.org"
       # "https://install.determinate.systems"
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       # "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
       # "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
       # "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
@@ -147,8 +149,9 @@
     };
 
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/v4.7.5";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:noctalia-dev/noctalia";
+      # Omit inputs.nixpkgs.follows to use the binary cache on Cachix.
+      # https://docs.noctalia.dev/v5/getting-started/nixos/#binary-cache
     };
 
     bluevein = {

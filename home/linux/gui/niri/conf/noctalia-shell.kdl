@@ -1,4 +1,4 @@
-// https://docs.noctalia.dev/getting-started/compositor-settings/niri/
+// https://docs.noctalia.dev/v5/compositor-settings/niri/
 
 window-rule {
   // Rounded corners for a modern look.
@@ -8,13 +8,21 @@ window-rule {
   clip-to-geometry true
 }
 
+// Floating Noctalia settings window.
+window-rule {
+  match app-id="dev.noctalia.Noctalia"
+  open-floating true
+  default-column-width { fixed 1080; }
+  default-window-height { fixed 920; }
+}
+
 debug {
   // Allows notification actions and window activation from Noctalia.
   honor-xdg-activation-with-invalid-serial
 }
 
-// Set the overview wallpaper on the backdrop.
+// Set the backdrop wallpaper on the backdrop layer (Option 1).
 layer-rule {
-  match namespace="^noctalia-overview*"
+  match namespace="^noctalia-backdrop"
   place-within-backdrop true
 }
