@@ -47,8 +47,6 @@ Noctalia Shell consolidates functionality that previously required multiple tool
   audio/volume, brightness, screen recorder, calendar, color schemes, dock, notifications, OSD, and
   more.
 
-- **[`hypridle/`](./hypridle/)**: Idle management
-
 ### Desktop Environment
 
 - **[`gtk.nix`](./gtk.nix)**: GTK theme configuration

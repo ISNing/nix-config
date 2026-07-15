@@ -34,10 +34,10 @@ Manager.
 1. **Configuration Location**: Desktop environment configuration files are located in `~/.config`,
    which can be easily managed by Home Manager.
 
-2. **User-specific Services**: User-specific systemd services (noctalia-shell, fcitx5, hypridle,
-   etc.) can be easily managed by Home Manager. If desktop environments were configured via NixOS
-   Module, these user-level services might fail to start automatically. With Home Manager modules,
-   we can control systemd service dependency order more effectively.
+2. **User-specific Services**: User-specific systemd services (noctalia-shell, fcitx5, etc.) can be
+   easily managed by Home Manager. If desktop environments were configured via NixOS Module, these
+   user-level services might fail to start automatically. With Home Manager modules, we can control
+   systemd service dependency order more effectively.
 
 3. **System Benefits**: By minimizing package installation through NixOS Module:
    - Makes the NixOS system more secure and stable

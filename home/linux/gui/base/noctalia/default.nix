@@ -467,7 +467,7 @@
 
       # ── Location ───────────────────────────────────────────
       location = {
-        name = "Beijing";
+        address = "Beijing, China";
         first_day_of_week = 1;
         use_12hour_format = false;
         weather_enabled = true;
@@ -500,9 +500,30 @@
       };
 
       # ── Services: Idle ─────────────────────────────────────
-      # v4 idle was disabled (using external hypridle)
       idle = {
         pre_action_fade_seconds = 2.0;
+        behavior_order = [
+          "screen-off"
+          "lock"
+          "lock-and-suspend"
+        ];
+        behavior = {
+          lock = {
+            action = "lock";
+            enabled = false;
+            timeout = 600.0;
+          };
+          "lock-and-suspend" = {
+            action = "lock_and_suspend";
+            enabled = false;
+            timeout = 900.0;
+          };
+          "screen-off" = {
+            action = "screen_off";
+            enabled = true;
+            timeout = 180.0;
+          };
+        };
       };
 
       # ── Services: System Monitor ───────────────────────────
