@@ -49,6 +49,7 @@ let
   modules-niri = {
     nixos-modules = [
       { programs.niri.enable = true; }
+      { nixpkgs.overlays = [ inputs."urayde-niri".overlays.default ]; }
     ]
     ++ base-modules.nixos-modules;
     home-modules = base-modules.home-modules;

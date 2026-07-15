@@ -2327,6 +2327,7 @@
         "open-design": "open-design",
         "pre-commit-hooks": "pre-commit-hooks_4",
         "preservation": "preservation",
+        "urayde-niri": "urayde-niri",
         "wallpapers": "wallpapers"
       }
     },
@@ -2408,6 +2409,27 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "rev": "f600ea449c7b5bb596fa1cf21c871cc5b9e31316",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_5": {
+      "inputs": {
+        "nixpkgs": [
+          "urayde-niri",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1757989933,
+        "narHash": "sha256-9cpKYWWPCFhgwQTww8S94rTXgg8Q8ydFv9fXM6I8xQM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "8249aa3442fb9b45e615a35f39eca2fe5510d7c3",
         "type": "github"
       },
       "original": {
@@ -2556,6 +2578,27 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "urayde-niri": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_5"
+      },
+      "locked": {
+        "lastModified": 1780952136,
+        "narHash": "sha256-+uPC6UBReE7ylCVbKzDMbphr/E5zQYIXIF6L+7FFguA=",
+        "owner": "urayde",
+        "repo": "niri",
+        "rev": "b115b3172f290fcd1c00c5eab50c105af3dd95a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "urayde",
+        "repo": "niri",
         "type": "github"
       }
     },

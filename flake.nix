@@ -153,6 +153,11 @@
       # https://docs.noctalia.dev/v5/getting-started/nixos/#binary-cache
     };
 
+    urayde-niri = {
+      url = "github:urayde/niri";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     bluevein = {
       url = "github:meowrch/BlueVein";
       inputs.nixpkgs.follows = "nixpkgs";
