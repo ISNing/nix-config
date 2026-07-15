@@ -1,0 +1,21 @@
+diff --git a/sound/hda/codecs/realtek/alc269.c b/sound/hda/codecs/realtek/alc269.c
+--- a/sound/hda/codecs/realtek/alc269.c
++++ b/sound/hda/codecs/realtek/alc269.c
+@@ -3174,5 +3174,17 @@ static void comp_generic_playback_hook(struct hda_pcm_stream *hinfo, struct hda
+ {
+ 	struct alc_spec *spec = cdc->spec;
+ 
++	/*
++	 * pcm_rec[2] contains the Alt Analog stream created by generic.c for an
++	 * independent headphone DAC.  SOF wraps the ALSA substream, so compare the
++	 * HDA stream object itself rather than sub->pcm or alt_dac_nid.  Companion
++	 * components such as CS35L41 are speaker amplifiers and must follow only
++	 * the main speaker PCM lifecycle.
++	 */
++	if (spec->gen.indep_hp_enabled &&
++	    spec->gen.pcm_rec[2] &&
++	    hinfo == &spec->gen.pcm_rec[2]->stream[SNDRV_PCM_STREAM_PLAYBACK])
++		return;
++
+ 	hda_component_manager_playback_hook(&spec->comps, action);
+ }

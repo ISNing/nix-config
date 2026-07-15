@@ -1,0 +1,139 @@
+diff --git a/skl_hda_dsp_generic.c b/skl_hda_dsp_generic.c
+--- a/skl_hda_dsp_generic.c
++++ b/skl_hda_dsp_generic.c
+@@ -8,18 +8,58 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <sound/core.h>
++#include <sound/control.h>
+ #include <sound/hda_codec.h>
+ #include <sound/jack.h>
+ #include <sound/pcm.h>
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
+ #include <sound/soc-acpi.h>
+-#include "../../codecs/hdac_hda.h"
+-#include "../../sof/intel/hda.h"
++#include "hda.h"
++#include "hdac_hda.h"
+ #include "sof_board_helpers.h"
+ 
++#define HDA_ALT_ANALOG_BE_ID	6
++
++SND_SOC_DAILINK_DEF(hda_alt_analog_cpus,
++			DAILINK_COMP_ARRAY(COMP_CPU("Alt Analog CPU DAI")));
++SND_SOC_DAILINK_DEF(hda_alt_analog_codecs,
++			DAILINK_COMP_ARRAY(COMP_CODEC("ehdaudio0D0", "Alt Analog Codec DAI")));
++SND_SOC_DAILINK_DEF(hda_alt_analog_platforms,
++			DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
++
++static int independent_hp_set_control(struct snd_soc_card *card, const char *name,
++				      bool enumerated, unsigned int value)
++{
++	struct snd_ctl_elem_value control = {};
++	struct snd_kcontrol *kcontrol;
++
++	kcontrol = snd_ctl_find_id_mixer(card->snd_card, name);
++	if (!kcontrol || !kcontrol->put)
++		return -ENOENT;
++
++	if (enumerated) {
++		control.value.enumerated.item[0] = value;
++	} else {
++		control.value.integer.value[0] = value;
++		control.value.integer.value[1] = value;
++	}
++
++	return kcontrol->put(kcontrol, &control) < 0 ? : 0;
++}
++
+ static int skl_hda_card_late_probe(struct snd_soc_card *card)
+ {
+-	return sof_intel_board_card_late_probe(card);
++	int ret;
++
++	ret = sof_intel_board_card_late_probe(card);
++	if (ret)
++		return ret;
++
++	ret = independent_hp_set_control(card, "Independent HP", true, 1);
++	if (ret)
++		return ret;
++
++	return independent_hp_set_control(card, "Headphone Playback Switch", false, 1);
+ }
+ 
+@@ -51,5 +90,5 @@ static void skl_set_hda_codec_autosuspend_delay(struct snd_soc_card *card)
+ #define IDISP_HDMI_BE_ID	1
+ #define HDA_BE_ID		4
+-#define DMIC01_BE_ID		6
+-#define DMIC16K_BE_ID		7
+-#define BT_OFFLOAD_BE_ID	8
++#define DMIC01_BE_ID		7
++#define DMIC16K_BE_ID		8
++#define BT_OFFLOAD_BE_ID	9
+@@ -97,5 +136,55 @@ static int skl_hda_add_dai_link(struct snd_soc_card *card,
+ 	return 0;
+ }
+ 
++static int independent_hp_append_alt_analog(struct device *dev,
++					     struct snd_soc_card *card,
++					     struct sof_card_private *ctx)
++{
++	struct snd_soc_dai_link *old_links = card->dai_link;
++	struct snd_soc_dai_link *links;
++	struct snd_soc_dai_link *alt;
++	int old_num_links = card->num_links;
++	int i;
++
++	if (!ctx->hda_codec_present)
++		return -ENODEV;
++
++	links = devm_kcalloc(dev, old_num_links + 1, sizeof(*links), GFP_KERNEL);
++	if (!links)
++		return -ENOMEM;
++
++	memcpy(links, old_links, sizeof(*links) * old_num_links);
++
++	if (ctx->codec_link)
++		ctx->codec_link = &links[ctx->codec_link - old_links];
++	if (ctx->amp_link)
++		ctx->amp_link = &links[ctx->amp_link - old_links];
++
++	/* Avoid the topology loader matching "Analog" before "Alt Analog". */
++	for (i = 0; i < old_num_links; i++) {
++		if (!strcmp(links[i].name, "Analog Playback and Capture"))
++			links[i].stream_name = "Analog";
++		else if (!strcmp(links[i].name, "Digital Playback and Capture"))
++			links[i].stream_name = "Digital";
++	}
++
++	alt = &links[old_num_links];
++	alt->name = "Alt Analog Playback and Capture";
++	alt->stream_name = "Alt Analog";
++	alt->cpus = hda_alt_analog_cpus;
++	alt->num_cpus = ARRAY_SIZE(hda_alt_analog_cpus);
++	alt->codecs = hda_alt_analog_codecs;
++	alt->num_codecs = ARRAY_SIZE(hda_alt_analog_codecs);
++	alt->platforms = hda_alt_analog_platforms;
++	alt->num_platforms = ARRAY_SIZE(hda_alt_analog_platforms);
++	alt->id = HDA_ALT_ANALOG_BE_ID;
++	alt->no_pcm = 1;
++
++	card->dai_link = links;
++	card->num_links = old_num_links + 1;
++
++	return 0;
++}
++
+ static int skl_hda_audio_probe(struct platform_device *pdev)
+ {
+@@ -134,5 +222,9 @@ static int skl_hda_audio_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = independent_hp_append_alt_analog(&pdev->dev, card, ctx);
++	if (ret)
++		return ret;
++
+ 	card->dev = &pdev->dev;

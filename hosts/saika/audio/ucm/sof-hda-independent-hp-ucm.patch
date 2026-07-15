@@ -1,0 +1,50 @@
+diff --git a/Intel/sof-hda-dsp-independent-hp/sof-hda-dsp.conf b/Intel/sof-hda-dsp-independent-hp/sof-hda-dsp.conf
+--- a/Intel/sof-hda-dsp-independent-hp/sof-hda-dsp.conf
++++ b/Intel/sof-hda-dsp-independent-hp/sof-hda-dsp.conf
+@@ -1,7 +1,13 @@
+ Syntax 7
+
+ Include.led.File "/common/ctl/led.conf"
+-Include.card-init.File "/lib/card-init.conf"
++# The upstream helper clears a mutable per-card cache with rm -rf.  The
++# board-specific copy only needs the directory for DMIC metadata, so create
++# it without deleting existing state.
++Define.LibDir "/var/lib/alsa/card${CardNumber}.conf.d"
++FixedBootSequence [
++	exec "mkdir -p -m 0755 ${var:LibDir}"
++]
+ Include.dsp-variables.File "dsp.conf"
+
+ Define {
+@@ -40,7 +46,7 @@
+ }
+
+ SectionUseCase."HiFi" {
+-	File "/Intel/sof-hda-dsp/HiFi.conf"
++	File "/Intel/sof-hda-dsp-independent-hp/HiFi.conf"
+ 	Comment "Play HiFi quality Music"
+ }
+ 
+diff --git a/Intel/sof-hda-dsp-independent-hp/HiFi.conf b/Intel/sof-hda-dsp-independent-hp/HiFi.conf
+--- a/Intel/sof-hda-dsp-independent-hp/HiFi.conf
++++ b/Intel/sof-hda-dsp-independent-hp/HiFi.conf
+@@ -8,7 +8,7 @@
+ 	Value.TQ "HiFi"
+ }
+
+-Include.hda-analog.File "/HDA/HiFi-analog.conf"
++Include.hda-analog.File "/HDA/HiFi-independent-hp-analog.conf"
+
+ Include.sof-analog.File "HiFi-sof.conf"
+
+diff --git a/HDA/HiFi-independent-hp-analog.conf b/HDA/HiFi-independent-hp-analog.conf
+--- a/HDA/HiFi-independent-hp-analog.conf
++++ b/HDA/HiFi-independent-hp-analog.conf
+@@ -150,6 +150,6 @@
+ 		Value {
+ 			PlaybackPriority 200
+-			PlaybackPCM "hw:${CardId}"
++			PlaybackPCM "hw:${CardId},31"
+ 			PlaybackMixerElem "${var:hpvol}"
+ 			PlaybackVolume "${var:hpvol} Playback Volume"
+ 			PlaybackSwitch "${var:hpvol} Playback Switch"

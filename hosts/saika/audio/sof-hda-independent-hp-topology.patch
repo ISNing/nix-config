@@ -1,0 +1,112 @@
+diff --git a/tools/topology/topology2/cavs-mixin-mixout-hda.conf b/tools/topology/topology2/cavs-mixin-mixout-hda.conf
+index 8374218..60c3b72 100644
+--- a/tools/topology/topology2/cavs-mixin-mixout-hda.conf
++++ b/tools/topology/topology2/cavs-mixin-mixout-hda.conf
+@@ -17,6 +17,18 @@ Define {
+         HDA_MIC_ENHANCED_CAPTURE        'false'
+ }
+ 
++# Keep PCM 0 on the normal Analog DAI and redirect the existing deep-buffer
++# PCM to the HDA generic parser's separate Alt Analog PCM when requested.
++IncludeByKey.INDEPENDENT_HP {
++	"true" {
++		Define {
++			HDA_ALT_ANALOG_DAI_NAME	'Alt Analog'
++			DEEP_BUFFER_PIPELINE_SINK	'mixout.16.1'
++			DEEP_BUFFER_PCM_NAME		'Headphones'
++		}
++	}
++}
++
+ # include deep buffer config if buffer size is in 1 - 1000 ms.
+ IncludeByKey.DEEPBUFFER_FW_DMA_MS{
+ 	"[1-1000]" "platform/intel/deep-buffer.conf"
+@@ -35,6 +47,23 @@ Object.Dai.HDA [
+ 	}
+ ]
+ 
++IncludeByKey.INDEPENDENT_HP {
++	"true" {
++		Object.Dai.HDA [
++			{
++				name $HDA_ALT_ANALOG_DAI_NAME
++				dai_index 2
++				id 6
++				default_hw_conf_id 4
++				Object.Base.hw_config.1 {
++					name "HDA0"
++				}
++				direction playback
++			}
++		]
++	}
++}
++
+ Object.Pipeline {
+ 	mixout-gain-efx-dai-copier-playback [
+ 		{
+@@ -274,6 +303,46 @@ Object.Pipeline {
+ 	]
+ }
+ 
++IncludeByKey.INDEPENDENT_HP {
++	"true" {
++		Object.Pipeline {
++			mixout-gain-dai-copier-playback [
++				{
++					index 16
++
++					Object.Widget.dai-copier.1 {
++						node_type $HDA_LINK_OUTPUT_CLASS
++						stream_name $HDA_ALT_ANALOG_DAI_NAME
++						dai_type "HDA"
++						copier_type "HDA"
++						num_input_audio_formats 1
++						num_output_audio_formats 1
++						Object.Base.input_audio_format [
++							{
++								in_rate $HDA_ANALOG_PLAYBACK_RATE
++								in_bit_depth 32
++								in_valid_bit_depth 32
++							}
++						]
++						Object.Base.output_audio_format [
++							{
++								out_rate $HDA_ANALOG_PLAYBACK_RATE
++								out_bit_depth 32
++								out_valid_bit_depth 32
++							}
++						]
++					}
++					Object.Widget.gain.1 {
++						Object.Control.mixer.1 {
++							name 'Post Mixer $DEEP_BUFFER_PCM_NAME Volume'
++						}
++					}
++				}
++			]
++		}
++	}
++}
++
+ IncludeByKey.HDA_MIC_ENHANCED_CAPTURE {
+         "true" {
+                 Object.Widget.tdfb.1 {
+@@ -403,6 +472,17 @@ Object.Base.route [
+ 	}
+ ]
+ 
++IncludeByKey.INDEPENDENT_HP {
++	"true" {
++		Object.Base.route [
++			{
++				source 'gain.16.1'
++				sink 'dai-copier.HDA.$HDA_ALT_ANALOG_DAI_NAME.playback'
++			}
++		]
++	}
++}
++
+ IncludeByKey.HDA_MIC_ENHANCED_CAPTURE {
+         "true" {
+                 Object.Base.route [

@@ -25,6 +25,7 @@ in
     ./boot.nix
     ./bitlk-decrypt.nix
     ./power.nix
+    ./audio/independent-hp.nix
   ];
 
   services.sunshine.enable = lib.mkForce true;

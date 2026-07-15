@@ -24,6 +24,7 @@ extend-ignore-re = [
   "crypted-.+",
   "daed",
   "hda",
+  "HDA",
 
   # catppuccin theme colors
   "11111b",
