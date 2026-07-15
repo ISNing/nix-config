@@ -42,6 +42,10 @@
 
   home.file."Pictures/Wallpapers".source = wallpapers;
 
+  # Symlink runtime override TOML into repo for tracking
+  home.file."${config.xdg.stateHome}/noctalia/settings.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/noctalia/settings.toml";
+
   xdg.configFile."qt6ct/qt6ct.conf".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/noctalia/qt6ct.conf";
 
