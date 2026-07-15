@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   hardware.graphics = {
     enable = true;
@@ -76,10 +81,14 @@
     })
   ];
 
-  services.sunshine.settings = {
-    max_bitrate = 20000; # in Kbps
-    # NVIDIA NVENC Encoder
-    nvenc_preset = 3; # 1(fastest + worst quality) - 7(slowest + best quality)
-    nvenc_twopass = "full_res"; # quarter_res / full_res.
+  services.sunshine = {
+    package = pkgs.sunshine.override { cudaSupport = true; };
+    settings = {
+      max_bitrate = 20000; # in Kbps
+      # NVIDIA NVENC Encoder
+      nvenc_preset = 3; # 1(fastest + worst quality) - 7(slowest + best quality)
+      nvenc_twopass = "full_res"; # quarter_res / full_res.
+    };
   };
+
 }
